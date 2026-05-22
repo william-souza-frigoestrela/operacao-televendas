@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "FrigoEstrela"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "65f719a8-0961-4c19-8527-6d4e9e89c296"
+  }
+}

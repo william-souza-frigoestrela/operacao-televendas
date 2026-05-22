@@ -1,0 +1,85 @@
+table Seletor_Metrica_Yuzap
+	lineageTag: 9894ebb1-46c7-4f58-aea2-5ae140f49b7f
+
+	measure 'Valor Métrica Yuzap' = ```
+			
+			    // Retorna o valor da métrica selecionada no slicer da página do Yuzap.
+			    // Ajusta automaticamente valores percentuais para exibição correta.
+			
+			    VAR MetricaSelecionada =
+			        SELECTEDVALUE(Seletor_Metrica_Yuzap[Metrica])
+			
+			    RETURN
+			        SWITCH(
+			            MetricaSelecionada,
+			
+			            "QTD Leads", [Leads Únicos Yuzap],
+			            "QTD do Discador", [Leads Migrados para WhatsApp],
+			            "Aptos", [Clientes Aptos],
+			            "Pré Cadastro", [Você disseClientes em Cadastro + Negociação],
+			            "Cadastro", [CADASTRO],
+			            "Venda Tabulada", [Clientes com Venda],
+			
+			            "% Conversão de Venda",
+			                [% Conversão Leads > Venda] * 100,
+			
+			            BLANK()
+			        )
+			```
+		formatString: 0
+		lineageTag: 3156ad45-7d83-4e0b-83bb-d001b7aaa9b6
+
+		annotation PBI_FormatHint = {"isDecimal":true}
+
+	measure 'Formato Métrica Yuzap' = ```
+			
+			    // Define o formato de exibição da métrica selecionada no slicer do Yuzap.
+			    // Métricas de volume aparecem como número inteiro.
+			    // Métricas percentuais aparecem como percentual.
+			
+			    SWITCH(
+			        SELECTEDVALUE(Seletor_Metrica_Yuzap[Metrica]),
+			        "% Conversão de Venda", "0.00%",
+			        "#,0"
+			    )
+			```
+		lineageTag: 51a8ce80-ceb5-4173-9a2a-fc53a6c449bf
+
+	column Metrica
+		lineageTag: 8c2c6cd4-3d30-40a3-a969-1a86bf657e93
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Metrica]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		formatString: 0
+		lineageTag: 5c0d1e60-1462-424b-b106-e3e585774cf5
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Seletor_Metrica_Yuzap = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Metrica", STRING,
+				    "Ordem", INTEGER,
+				    {
+				        {"QTD Leads", 1},
+				        {"QTD do Discador", 2},
+				        {"Aptos", 3},
+				        {"Pré Cadastro", 4},
+				        {"Cadastro", 5},
+				        {"Venda Tabulada", 6},
+				        {"% Conversão de Venda",7}
+				    }
+				)
+
+	annotation PBI_Id = ed6de342b3944706a75c05b4f91c727a
+

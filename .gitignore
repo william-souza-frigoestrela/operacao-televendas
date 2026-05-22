@@ -1,0 +1,7 @@
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Configurações de usuário locais e arquivos temporários do Power BI
+*.pbi
+*.user.config
+.Package/

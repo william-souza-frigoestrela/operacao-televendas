@@ -1,0 +1,684 @@
+table 'Medidas Funil YUZAP'
+	lineageTag: 026518fa-9e35-462a-b070-b57a292b1876
+
+	measure 'Você disseClientes em Cadastro + Negociação' =
+			
+			
+			// Conta os clientes únicos que estão nas etapas de cadastro ou negociação.
+			
+			
+			
+			COALESCE(
+			
+			CALCULATE(
+			
+			DISTINCTCOUNT(F_Yuzap_Conversas[ID]),
+			
+			F_Yuzap_Conversas[Labels] IN {
+			
+			"documentação_cadastro"
+			
+			}
+			
+			),
+			
+			0
+			
+			)
+		formatString: 0
+		lineageTag: 1383891e-2a24-4852-aafc-283f4841583a
+
+	measure CADASTRO = ```
+			
+			    // Conta os clientes únicos que estão nas etapas de cadastro ou negociação.
+			
+			    COALESCE(
+			        CALCULATE(
+			            DISTINCTCOUNT(F_Yuzap_Conversas[ID]),
+			            F_Yuzap_Conversas[Labels] IN {
+			                "cadastro_ativo"
+			            }
+			        ),
+			        0
+			    )
+			```
+		formatString: 0
+		lineageTag: 04faa0ce-f692-419a-88f0-52deb863f18b
+
+	measure '% Conversão Leads > Aptos' = ```
+			
+			    // Calcula a conversão de Leads para Aptos.
+			    // Mede quantos leads únicos do Yuzap foram considerados aptos.
+			
+			    COALESCE(
+			        DIVIDE(
+			            [Clientes Aptos],
+			            [Leads Únicos Yuzap]
+			        ),
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: f5a09ea3-702c-4852-a8b6-0dc8f653c4e8
+
+	measure '% Conversão Aptos > Pré' = ```
+			
+			    // Calcula a conversão de Aptos para Pré.
+			    // Mede quantos clientes aptos avançaram para cadastro ou negociação.
+			
+			    COALESCE(
+			        DIVIDE(
+			            [Você disseClientes em Cadastro + Negociação],
+			            [Clientes Aptos]
+			        ),
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: e6a44854-98d8-46af-8c1b-f3abfcbec54b
+
+	measure '% Conversão Pré > Cadastro' = ```
+			
+			    // Calcula a conversão de Pré para Cadastro.
+			    // Mede quantos clientes em cadastro + negociação estão no estágio de cadastro.
+			
+			    COALESCE(
+			        DIVIDE(
+			            [CADASTRO],
+			            [Você disseClientes em Cadastro + Negociação]
+			        ),
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 4944667d-4df7-4367-863a-4afa42a031c2
+
+	measure '% Conversão Cadastro > Tabulada' = ```
+			
+			    // Calcula a conversão de Cadastro para Tabulada.
+			    // Mede quantos clientes em cadastro viraram clientes com venda.
+			
+			    COALESCE(
+			        DIVIDE(
+			            [Clientes com Venda],
+			            [CADASTRO]
+			        ),
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: d841d17b-6384-4a55-a5c6-034415c3c2ec
+
+	measure '% Conversão Leads > Venda' = ```
+			
+			    // Calcula a taxa de conversão do total de leads do Yuzap
+			    // para o total de clientes que efetivamente viraram venda.
+			    // Essa é a conversão final do funil.
+			
+			    COALESCE(
+			        DIVIDE(
+			            [Clientes com Venda],
+			            [Leads Únicos Yuzap]
+			        ),
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5f504d72-fad8-47c1-9304-0b1fc05d5a8a
+
+	/// Array JSON com métricas mensais do Yuzap (Leads, Aptos, Pré, Cadastro, Venda) para o gráfico de evolução do HTML Yuzap. IGNORA filtros de data.
+	measure '_JSON Mensal Yuzap' =
+			VAR _meses =
+			    CALCULATETABLE(
+			        FILTER(
+			            SUMMARIZE(F_Yuzap_Conversas, D_Calendario[Mês/Ano], D_Calendario[MesAno Ordem]),
+			            NOT ISBLANK(D_Calendario[MesAno Ordem])
+			        ),
+			        ALL(D_Calendario)
+			    )
+			VAR _result =
+			    ADDCOLUMNS(
+			        _meses,
+			        "_leads",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Leads Únicos Yuzap], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_aptos",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Clientes Aptos], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_pre",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Você disseClientes em Cadastro + Negociação], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_cad",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([CADASTRO], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_venda",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Clientes com Venda], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym)
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _result,
+			    "{""mes"":""" & D_Calendario[Mês/Ano] &
+			    """,""ord"":" & D_Calendario[MesAno Ordem] &
+			    ",""leads"":"  & COALESCE([_leads],  0) &
+			    ",""aptos"":"  & COALESCE([_aptos],  0) &
+			    ",""pre"":"    & COALESCE([_pre],    0) &
+			    ",""cad"":"    & COALESCE([_cad],    0) &
+			    ",""venda"":"  & COALESCE([_venda],  0) &
+			    "}",
+			    ",",
+			    D_Calendario[MesAno Ordem], ASC
+			) & "]"
+		displayFolder: HTML Yuzap
+		lineageTag: 7eb44f4e-f8bc-4cdd-9534-248272441bf0
+
+	/// Array JSON com métricas por agente do Yuzap (Leads, Aptos, Pré, Cadastro, Venda, Resolvidos, Tempo Médio) para o gráfico por agente do HTML Yuzap.
+	measure '_JSON Agentes Yuzap' =
+			VAR _agentes =
+			    FILTER(
+			        VALUES(F_Yuzap_Conversas[Agente Responsavel]),
+			        NOT ISBLANK(F_Yuzap_Conversas[Agente Responsavel]) && F_Yuzap_Conversas[Agente Responsavel] <> ""
+			    )
+			VAR _result =
+			    ADDCOLUMNS(
+			        _agentes,
+			        "_leads",     CALCULATE([Leads Únicos Yuzap]),
+			        "_aptos",     CALCULATE([Clientes Aptos]),
+			        "_pre",       CALCULATE([Você disseClientes em Cadastro + Negociação]),
+			        "_cad",       CALCULATE([CADASTRO]),
+			        "_venda",     CALCULATE([Clientes com Venda]),
+			        "_resolvido", CALCULATE(
+			            COUNTROWS(F_Yuzap_Conversas),
+			            F_Yuzap_Conversas[Status] = "Resolvido",
+			            KEEPFILTERS(F_Yuzap_Conversas[Labels] <> "func_frigo")
+			        ),
+			        "_tempo",     CALCULATE([Tempo Médio Resolução])
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _result,
+			    "{""agente"":""" & SUBSTITUTE(SUBSTITUTE(F_Yuzap_Conversas[Agente Responsavel], """""", ""), "'", "&#39;") &
+			    """,""leads"":"    & COALESCE([_leads],     0) &
+			    ",""aptos"":"      & COALESCE([_aptos],     0) &
+			    ",""pre"":"         & COALESCE([_pre],       0) &
+			    ",""cad"":"         & COALESCE([_cad],       0) &
+			    ",""venda"":"       & COALESCE([_venda],     0) &
+			    ",""resolvido"":"   & COALESCE([_resolvido], 0) &
+			    ",""tempo"":"""     & IF(ISBLANK([_tempo]), "--", [_tempo]) & """" &
+			    "}",
+			    ",",
+			    [_leads], DESC
+			) & "]"
+		displayFolder: HTML Yuzap
+		lineageTag: d4796ea0-70b8-4ec9-8443-fb3624c94894
+
+	/// Array JSON com distribuição de conversas por status (Resolvido, Adiado, Em Aberto, Pendente) para o gráfico de status do HTML Yuzap.
+	measure '_JSON Status Yuzap' =
+			VAR _status =
+			    FILTER(
+			        VALUES(F_Yuzap_Conversas[Status]),
+			        NOT ISBLANK(F_Yuzap_Conversas[Status])
+			    )
+			VAR _result =
+			    ADDCOLUMNS(
+			        _status,
+			        "_qtd", CALCULATE(
+			            COUNTROWS(F_Yuzap_Conversas),
+			            KEEPFILTERS(F_Yuzap_Conversas[Labels] <> "func_frigo")
+			        )
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _result,
+			    "{""status"":""" & SUBSTITUTE(F_Yuzap_Conversas[Status], """""", "") &
+			    """,""qtd"":" & COALESCE([_qtd], 0) &
+			    "}",
+			    ",",
+			    [_qtd], DESC
+			) & "]"
+		displayFolder: HTML Yuzap
+		lineageTag: 46055c17-ee2a-4a90-97bf-0acc020498a5
+
+	/// Array JSON com top 10 etiquetas por volume de conversas para o gráfico de etiquetas do HTML Yuzap.
+	measure '_JSON Etiquetas Yuzap' =
+			VAR _todas =
+			    FILTER(
+			        VALUES(F_Yuzap_Conversas[Labels]),
+			        NOT ISBLANK(F_Yuzap_Conversas[Labels])
+			        && F_Yuzap_Conversas[Labels] <> ""
+			        && F_Yuzap_Conversas[Labels] <> "func_frigo"
+			    )
+			VAR _comQtd =
+			    ADDCOLUMNS(
+			        _todas,
+			        "_qtd", CALCULATE(COUNTROWS(F_Yuzap_Conversas))
+			    )
+			VAR _top10 = TOPN(10, _comQtd, [_qtd], DESC)
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _top10,
+			    "{""label"":""" & SUBSTITUTE(SUBSTITUTE(F_Yuzap_Conversas[Labels], """""", ""), "_", " ") &
+			    """,""qtd"":" & COALESCE([_qtd], 0) &
+			    "}",
+			    ",",
+			    [_qtd], DESC
+			) & "]"
+		displayFolder: HTML Yuzap
+		lineageTag: 02dc6235-0ca4-47da-95e0-49c8e9ba8d4a
+
+	/// Objeto JSON com etapas do funil Yuzap em duas visões: mensal e acumulado (com toggle no HTML). Funil: Leads > Aptos > Pré > Cadastro > Venda.
+	measure '_JSON Funil Yuzap' =
+			VAR _jsonMensal =
+			    "{""leads"":"  & COALESCE([Leads Únicos Yuzap], 0) &
+			    ",""aptos"":"  & COALESCE([Clientes Aptos], 0) &
+			    ",""pre"":"    & COALESCE([Você disseClientes em Cadastro + Negociação], 0) &
+			    ",""cad"":"    & COALESCE([CADASTRO], 0) &
+			    ",""venda"":"  & COALESCE([Clientes com Venda], 0) &
+			    "}"
+			VAR _jsonAcum =
+			    "{""leads"":"  & COALESCE([Leads Únicos Yuzap], 0) &
+			    ",""aptos"":"  & COALESCE([Clientes Aptos], 0) &
+			    ",""pre"":"    & COALESCE([Pré Acumulado], 0) &
+			    ",""cad"":"    & COALESCE([Cadastro acumulado], 0) &
+			    ",""venda"":"  & COALESCE([Clientes com Venda], 0) &
+			    "}"
+			RETURN
+			"{""mensal"":" & _jsonMensal & ",""acumulado"":" & _jsonAcum & "}"
+		displayFolder: HTML Yuzap
+		lineageTag: 05a4f97e-4841-496f-9999-58ffbcdc441d
+
+	/// HTML Yuzap - layout original, botoes Mensal/Acumulado, default Mensal
+	measure 'HTML Yuzap' =
+			"<style>:root {
+			  --bg:    #EEEAE2;
+			  --surf:  #FFFFFF;
+			  --surf2: #F7F3EB;
+			  --bd:    rgba(26,26,26,.07);
+			  --bd2:   rgba(26,26,26,.15);
+			  --t1:    #1A1A1A;
+			  --t2:    #5A5A5A;
+			  --t3:    #8B8B8B;
+			  --gold:  #B8935A;
+			  --goldS: #EAD9BE;
+			  --dark:  #1E1E1E;
+			  --grn:   #4E7D62;
+			  --org:   #C07C3A;
+			  --blu:   #4A6E8A;
+			  --red:   #A04848;
+			  --sh1:   0 1px 3px rgba(0,0,0,.06);
+			  --sh2:   0 2px 10px rgba(0,0,0,.1);
+			  --r:     10px;
+			  --ease:  cubic-bezier(.4,0,.2,1);
+			}
+			* { box-sizing: border-box; margin: 0; padding: 0; }
+			html, body {
+			  height: 100vh; width: 100vw; overflow: hidden;
+			  background: var(--bg);
+			  font-family: 'Segoe UI', system-ui, sans-serif;
+			  font-size: 13px; color: var(--t1);
+			  -webkit-font-smoothing: antialiased;
+			}
+			.dash {
+			  height: 100vh;
+			  padding: 10px 12px;
+			  display: grid;
+			  grid-template-rows: 46px 0.8fr 1fr 1fr;
+			  gap: 9px;
+			}
+			.hdr { display: flex; align-items: center; justify-content: space-between; padding: 0 2px; }
+			.hdr-title { font-size: 26px; font-weight: 700; letter-spacing: -.5px; display: block; }
+			.hdr-sub { font-size: 13px; color: var(--t3); display: block; margin-top: -1px; }
+			.hdr-right { display: flex; align-items: center; gap: 14px; font-size: 11px; color: var(--t3); }
+			.top { display: grid; grid-template-columns: 380px 1fr; gap: 9px; min-height: 0; }
+			.mid { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 9px; min-height: 0; }
+			.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 7px; }
+			.kpi { background: var(--surf); border-radius: var(--r); padding: 11px 13px; box-shadow: var(--sh1); border: 1px solid var(--bd); display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+			.kpi-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+			.kpi-label { font-size: 12px; color: var(--t2); font-weight: 500; }
+			.kpi-icon { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, var(--goldS), #F0E4CC); display: flex; align-items: center; justify-content: center; color: var(--gold); flex-shrink: 0; }
+			.kpi-icon svg { width: 13px; height: 13px; }
+			.kpi-val { font-size: 30px; font-weight: 700; letter-spacing: -.6px; line-height: 1.1; font-variant-numeric: tabular-nums; margin-top: 4px; }
+			.kpi-sub { font-size: 12px; color: var(--t3); margin-top: 3px; }
+			.kpi-sub .up { color: var(--grn); font-weight: 600; }
+			.kpi-sub .down { color: var(--red); font-weight: 600; }
+			.kpi-sub .neu { color: var(--gold); font-weight: 600; }
+			.funil-card { background: var(--surf); border-radius: var(--r); padding: 11px 14px; box-shadow: var(--sh1); border: 1px solid var(--bd); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+			.card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-shrink: 0; }
+			.card-title { font-size: 15px; font-weight: 600; letter-spacing: -.2px; }
+			.card-sub { font-size: 11.5px; color: var(--t3); margin-top: 1px; }
+			.toggle { display: flex; background: var(--surf2); border: 1px solid var(--bd2); border-radius: 100px; overflow: hidden; }
+			.toggle button { padding: 4px 11px; font-size: 10.5px; font-weight: 600; border: none; background: transparent; color: var(--t2); cursor: pointer; font-family: inherit; transition: all .15s; }
+			.toggle button.on { background: var(--dark); color: #fff; border-radius: 100px; }
+			.cv { flex: 1; width: 100%; display: block; min-height: 0; }
+			.bottom { display: grid; grid-template-columns: 1fr; min-height: 0; }
+			.card { background: var(--surf); border-radius: var(--r); padding: 11px 13px; box-shadow: var(--sh1); border: 1px solid var(--bd); display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+			.dd { position: relative; display: inline-block; }
+			.dd-btn { background: var(--dark); color: #fff; border: none; border-radius: 100px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; font-family: inherit; }
+			.dd-list { position: absolute; top: calc(100% + 4px); right: 0; min-width: 148px; background: #222; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.3); z-index: 9999; display: none; overflow: hidden; }
+			.dd-list.on { display: block; }
+			.dd-item { padding: 7px 12px; color: rgba(255,255,255,.8); font-size: 11px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .1s; font-family: inherit; }
+			.dd-item:hover { background: rgba(255,255,255,.1); }
+			.dd-item.act { color: var(--gold); }
+			.cv .gl { stroke: rgba(0,0,0,.06); stroke-dasharray: 3,4; }
+			.cv .axl { fill: #8B8B8B; font-size: 12px; font-weight: 500; }
+			.cv .axv { fill: #1A1A1A; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+			.cv .ml { stroke: #B8935A; stroke-dasharray: 4,3; stroke-width: 1.5; }
+			.cv .mlt { fill: #B8935A; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+			.tag-list { display: flex; flex-direction: column; gap: 7px; flex: 1; overflow-y: auto; min-height: 0; }
+			.tag-head { display: flex; justify-content: space-between; margin-bottom: 3px; gap: 6px; }
+			.tag-name { font-size: 12px; color: #1A1A1A; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+			.tag-count { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+			.tag-track { height: 5px; background: #EAD9BE; border-radius: 100px; overflow: hidden; }
+			.tag-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, #1A1A1A, #444); width: 0; transition: width .8s var(--ease); }
+			.tt { position: fixed; background: #1E1E1E; color: #fff; padding: 6px 10px; border-radius: 7px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity .15s; z-index: 9999; white-space: nowrap; box-shadow: 0 4px 20px rgba(0,0,0,.2); }
+			.tt.on { opacity: 1; }
+			.tt b { color: #D4B687; }
+			</style>" &
+			"<div class='dash'>
+			  <div class='hdr'>
+			    <div>
+			      <span class='hdr-title'>Yuzap</span>
+			      <span class='hdr-sub'>WhatsApp - Funil de conversão e análise de conversas</span>
+			    </div>
+			    <div class='hdr-right' id='hdrRight'></div>
+			  </div>
+			  <div class='top'>
+			    <div class='kpi-grid' id='kpiGrid'></div>
+			    <div class='funil-card'>
+			      <div class='card-head'>
+			        <div>
+			          <div class='card-title'>Pipeline de Conversão</div>
+			          <div class='card-sub' id='funilSub'>Mensal - valores do período filtrado</div>
+			        </div>
+			        <div class='toggle'>
+			          <button id='btnMes' class='on' onclick='setFMode(&quot;mes&quot;)'>Mensal</button>
+			          <button id='btnAcum' onclick='setFMode(&quot;acum&quot;)'>Acumulado</button>
+			        </div>
+			      </div>
+			      <svg class='cv' id='svgFunil' preserveAspectRatio='xMidYMid meet'></svg>
+			    </div>
+			  </div>
+			  <div class='mid'>
+			    <div class='card'>
+			      <div class='card-head'>
+			        <div>
+			          <div class='card-title'>Evolução Mensal</div>
+			          <div class='card-sub'>Histórico completo - ignora filtro de data</div>
+			        </div>
+			        <div class='dd'>
+			          <button class='dd-btn' id='mA-b' data-v='leads' data-t='mA-l' onclick='tgD(&quot;mA-l&quot;)'>Leads ▾</button>
+			          <div class='dd-list' id='mA-l' data-p='mA' data-fn='rEv' onclick='ddC(event)'>
+			            <div class='dd-item act' data-v='leads' data-l='Leads'>Leads</div>
+			            <div class='dd-item' data-v='aptos' data-l='Aptos'>Aptos</div>
+			            <div class='dd-item' data-v='pre' data-l='Pre (Doc.)'>Pre (Doc.)</div>
+			            <div class='dd-item' data-v='cad' data-l='Cadastro'>Cadastro</div>
+			            <div class='dd-item' data-v='venda' data-l='Venda'>Venda</div>
+			          </div>
+			        </div>
+			      </div>
+			      <svg class='cv' id='svgEv' preserveAspectRatio='xMidYMid meet'></svg>
+			    </div>
+			    <div class='card'>
+			      <div class='card-head'>
+			        <div><div class='card-title'>Status</div><div class='card-sub'>Distribuição</div></div>
+			      </div>
+			      <svg class='cv' id='svgSt' preserveAspectRatio='xMidYMid meet'></svg>
+			    </div>
+			    <div class='card'>
+			      <div class='card-head'>
+			        <div><div class='card-title'>Top Etiquetas</div><div class='card-sub'>Top 10 por volume</div></div>
+			      </div>
+			      <div class='tag-list' id='tagList'></div>
+			    </div>
+			  </div>
+			  <div class='bottom'>
+			    <div class='card'>
+			      <div class='card-head'>
+			        <div>
+			          <div class='card-title'>Por Agente</div>
+			          <div class='card-sub'>+ linha de média</div>
+			        </div>
+			        <div class='dd'>
+			          <button class='dd-btn' id='mB-b' data-v='leads' data-t='mB-l' onclick='tgD(&quot;mB-l&quot;)'>Leads ▾</button>
+			          <div class='dd-list' id='mB-l' data-p='mB' data-fn='rAg' onclick='ddC(event)'>
+			            <div class='dd-item act' data-v='leads' data-l='Leads'>Leads</div>
+			            <div class='dd-item' data-v='aptos' data-l='Aptos'>Aptos</div>
+			            <div class='dd-item' data-v='pre' data-l='Pre (Doc.)'>Pre (Doc.)</div>
+			            <div class='dd-item' data-v='cad' data-l='Cadastro'>Cadastro</div>
+			            <div class='dd-item' data-v='venda' data-l='Venda'>Venda</div>
+			          </div>
+			        </div>
+			      </div>
+			      <svg class='cv' id='svgAg' preserveAspectRatio='xMidYMid meet'></svg>
+			    </div>
+			  </div>
+			</div>
+			<div class='tt' id='tt'></div>" &
+			"<script type='application/json' id='jKpi'>" & [_JSON KPIs Yuzap] & "</script>" &
+			"<script type='application/json' id='jFu'>" & [_JSON Funil Yuzap] & "</script>" &
+			"<script type='application/json' id='jMy'>" & [_JSON Mensal Yuzap] & "</script>" &
+			"<script type='application/json' id='jAy'>" & [_JSON Agentes Yuzap] & "</script>" &
+			"<script type='application/json' id='jSt'>" & [_JSON Status Yuzap] & "</script>" &
+			"<script type='application/json' id='jEt'>" & [_JSON Etiquetas Yuzap] & "</script>" &
+			[_JS Yuzap]
+		displayFolder: HTML Yuzap
+		lineageTag: d463b63e-98e6-4854-9335-bb7312aa8316
+
+	/// JS Yuzap - default mensal, pipeline ambos modos, fix % conversao (next/val)
+	measure '_JS Yuzap' =
+			"<script>" & "(function () {
+			  'use strict';
+			  function rJ(id) { var e = document.getElementById(id); try { return JSON.parse((e && e.textContent) || 'null'); } catch (ex) { return null; } }
+			  function esc(v) { return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+			  function fN(v) { return (Number(v) || 0).toLocaleString('pt-BR'); }
+			  function fA(v) { v = Math.round(Number(v) || 0); if (v >= 1000) return (v/1000).toFixed(1).replace('.',',') + ' mil'; return fN(v); }
+			  function pctClr(p) { if (p >= 60) return '#4E7D62'; if (p >= 30) return '#C07C3A'; return '#A04848'; }
+			  function svgDim(el, fbW, fbH) { var bb = el.getBoundingClientRect(); return [Math.round(bb.width) || fbW, Math.round(bb.height) || fbH]; }
+			  var ttEl = document.getElementById('tt');
+			  window.tip = function(e,h){ if (!ttEl) return; ttEl.innerHTML = h; ttEl.classList.add('on'); ttEl.style.left = (e.clientX+14)+'px'; ttEl.style.top = (e.clientY-36)+'px'; };
+			  window.tipOff = function(){ ttEl && ttEl.classList.remove('on'); };
+			  window.tgD = function(id){ var l = document.getElementById(id); if (!l) return; document.querySelectorAll('.dd-list.on').forEach(function(e){ if(e!==l) e.classList.remove('on'); }); l.classList.toggle('on'); };
+			  window.ddC = function(e){ var o = e.target.closest('.dd-item'); if (!o) return; var ls=e.currentTarget, p=ls.dataset.p, fn=ls.dataset.fn, v=o.dataset.v, l=o.dataset.l; var b=document.getElementById(p+'-b'); if(b){ b.textContent=l+' ▾'; b.dataset.v=v; } ls.querySelectorAll('.dd-item').forEach(function(el){ el.classList.toggle('act', el.dataset.v===v); }); ls.classList.remove('on'); if(window[fn]) window[fn](); };
+			  document.addEventListener('click', function(e){ if (!e.target.closest('.dd')) document.querySelectorAll('.dd-list.on').forEach(function(el){ el.classList.remove('on'); }); });
+			  function axes(W,H,P,mx){ var s=''; for(var i=0;i<=4;i++){ var y=P.t+(H-P.t-P.b)*i/4, v=mx*(1-i/4); s += ""<line class='gl' x1='""+(P.l)+""' x2='""+(W-P.r)+""' y1='""+(y)+""' y2='""+(y)+""'/>""; if(i<4) s += ""<text class='axl' x='""+(P.l-4)+""' y='""+(y+4)+""' text-anchor='end'>""+fA(v)+""</text>""; } return s; }
+			  function smoothCurve(pts){if(pts.length<2)return pts.length?'M'+pts[0].x.toFixed(1)+','+pts[0].y.toFixed(1):'';var d='M'+pts[0].x.toFixed(1)+','+pts[0].y.toFixed(1);for(var i=0;i<pts.length-1;i++){var p0=pts[Math.max(i-1,0)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(i+2,pts.length-1)];var cp1x=p1.x+(p2.x-p0.x)/6,cp1y=p1.y+(p2.y-p0.y)/6,cp2x=p2.x-(p3.x-p1.x)/6,cp2y=p2.y-(p3.y-p1.y)/6;d+=' C'+cp1x.toFixed(1)+','+cp1y.toFixed(1)+' '+cp2x.toFixed(1)+','+cp2y.toFixed(1)+' '+p2.x.toFixed(1)+','+p2.y.toFixed(1);}return d;}
+			  var kpiIcons = {
+			    users: ""<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2'><path d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/><circle cx='9' cy='7' r='4'/></svg>"",
+			    check: ""<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2'><path d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/><polyline points='22 4 12 14.01 9 11.01'/></svg>"",
+			    chat:  ""<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>"",
+			    star:  ""<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'/></svg>""
+			  };
+			  function buildKPIs(){
+			    var K=rJ('jKpi')||{}; var el=document.getElementById('kpiGrid'); if(!el) return;
+			    function momClass(s){ if(!s||s==='--') return 'neu'; return s.indexOf('+')===0?'up':'down'; }
+			    function momText(s){ return (s&&s!=='--')?s:'-'; }
+			    var cards=[
+			      {icon:'users',label:'Leads Totais',val:fN(K.leads||0),sub:'VS MoM % = <span class=\''+momClass(K.mom)+'\'>'+momText(K.mom)+'</span>'},
+			      {icon:'check',label:'Leads Aptos',val:fN(K.aptos||0),sub:'% Aptos = <span class=\'neu\'>'+(K.pctAptos||0).toFixed(1).replace('.',',')+'%</span>'},
+			      {icon:'chat',label:'Leads do Discador',val:fN(K.discador||0),sub:'% Discador = <span class=\'neu\'>'+(K.pctDiscador||0).toFixed(1).replace('.',',')+'%</span>'},
+			      {icon:'star',label:'Venda Yuzap',val:fN(K.venda||0),sub:'% Venda/Aptos = <span class=\'neu\'>'+(K.pctVendaAptos||0).toFixed(1).replace('.',',')+'%</span>'}
+			    ];
+			    el.innerHTML=cards.map(function(c){ return ""<div class='kpi'><div class='kpi-top'><span class='kpi-label'>""+c.label+""</span><div class='kpi-icon'>""+kpiIcons[c.icon]+""</div></div><div class='kpi-val'>""+c.val+""</div><div class='kpi-sub'>""+c.sub+""</div></div>""; }).join('');
+			  }
+			  var _fMode='mes';
+			  window.setFMode=function(m){ _fMode=m; document.getElementById('btnAcum').classList.toggle('on',m==='acum'); document.getElementById('btnMes').classList.toggle('on',m==='mes'); document.getElementById('funilSub').textContent=m==='acum'?'Acumulado - cada etapa inclui as seguintes':'Mensal - valores do periodo filtrado'; renderFunil(); };
+			  function renderFunil(){ var el=document.getElementById('svgFunil'); if(!el) return; var FU=rJ('jFu')||{acumulado:{},mensal:{}}; var d=svgDim(el,800,120); var W=d[0],H=d[1]; el.setAttribute('viewBox','0 0 '+W+' '+H); var dados=_fMode==='acum'?(FU.acumulado||{}):(FU.mensal||{}); renderFunilAcum(el,W,H,dados); }
+			  function renderFunilAcum(el,W,H,ac){
+			    var stages=[{k:'leads',l:'LEADS'},{k:'aptos',l:'APTOS'},{k:'pre',l:'PRE'},{k:'cad',l:'CADASTRO'},{k:'venda',l:'VENDA'}];
+			    var clrs=['#1A1A1A','#1E3128','#1A2A38','#3A2410','#B8935A'], tclrs=['#fff','#fff','#fff','#fff','#1A1A1A'];
+			    var n=stages.length,arW=52,padX=16,padY=10;
+			    var sW=Math.floor((W-2*padX-(n-1)*arW)/n), sH=H-2*padY, base=Math.max(ac['leads']||0,1), svg='';
+			    stages.forEach(function(st,i){
+			      var val=ac[st.k]||0;
+			      var basePct=val/base*100;
+			      var x0=padX+i*(sW+arW), c=clrs[i], tc=tclrs[i];
+			      svg += ""<g onmousemove=\""tip(event,'<b>""+st.l+""</b><br>""+fN(val)+""')\"" onmouseleave='tipOff()'>"";
+			      svg += ""<rect x='""+x0+""' y='""+padY+""' width='""+sW+""' height='""+sH+""' rx='8' fill='""+c+""'/>"";
+			      svg += ""<rect x='""+x0+""' y='""+padY+""' width='""+sW+""' height='""+Math.round(sH*.3)+""' rx='8' fill='rgba(255,255,255,.07)'/>"";
+			      svg += ""<text x='""+Math.round(x0+sW/2)+""' y='""+Math.round(padY+13)+""' text-anchor='middle' fill='""+tc+""' font-size='10.5' font-weight='700' opacity='.65' font-family='Segoe UI,sans-serif'>""+st.l+""</text>"";
+			      svg += ""<text x='""+Math.round(x0+sW/2)+""' y='""+Math.round(padY+sH/2+9)+""' text-anchor='middle' fill='""+tc+""' font-size='""+Math.min(24,Math.round(sW*.18))+""' font-weight='700' font-family='Segoe UI,sans-serif'>""+fN(val)+""</text>"";
+			      if(i>0) svg += ""<text x='""+Math.round(x0+sW/2)+""' y='""+Math.round(padY+sH-8)+""' text-anchor='middle' fill='""+tc+""' font-size='11' opacity='.65' font-family='Segoe UI,sans-serif'>""+basePct.toFixed(1).replace('.',',')+""% base</text>"";
+			      svg += ""</g>"";
+			      if(i<n-1){ var ax=x0+sW, cy2=padY+sH/2;
+			        var next=ac[stages[i+1].k]||0;
+			        var stepPct=val>0?(next/val*100):null;
+			        svg += ""<line x1='""+Math.round(ax+4)+""' y1='""+Math.round(cy2)+""' x2='""+Math.round(ax+arW-8)+""' y2='""+Math.round(cy2)+""' stroke='#B8935A' stroke-width='1.5' opacity='.7'/>"";
+			        svg += ""<polygon points='""+Math.round(ax+arW-4)+"",""+Math.round(cy2)+"" ""+Math.round(ax+arW-12)+"",""+Math.round(cy2-5)+"" ""+Math.round(ax+arW-12)+"",""+Math.round(cy2+5)+""' fill='#B8935A' opacity='.7'/>"";
+			        if(stepPct!==null){ var sc=pctClr(stepPct); svg += ""<text x='""+Math.round(ax+arW/2)+""' y='""+Math.round(cy2-12)+""' text-anchor='middle' fill='""+sc+""' font-size='12' font-weight='700' font-family='Segoe UI,sans-serif'>""+stepPct.toFixed(1).replace('.',',')+""%</text>""; }
+			      }
+			    });
+			    el.innerHTML=svg;
+			  }
+			  function renderFunilMes(el,W,H,mensal){
+			    if(!mensal||!mensal.length){ el.innerHTML=""<text x='""+(W/2)+""' y='""+(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>""; return; }
+			    var P={t:20,r:14,b:24,l:38}; var all=[]; mensal.forEach(function(d){ all.push(d.leads||0,d.aptos||0); });
+			    var mx=Math.max.apply(null,all.concat([1]))*1.15, CW=W-P.l-P.r, CH=H-P.t-P.b, gw=CW/mensal.length, bw=Math.max(4,(gw-10)/2);
+			    var svg=axes(W,H,P,mx);
+			    mensal.forEach(function(d,i){
+			      var x1=P.l+i*gw+(gw-bw*2-3)/2, x2=x1+bw+3;
+			      var v1=d.leads||0, v2=d.aptos||0;
+			      var h1=(v1/mx)*CH, h2=(v2/mx)*CH;
+			      var y1=P.t+CH-h1, y2=P.t+CH-h2;
+			      var ms=String(d.mes||'').split('/')[0];
+			      svg += ""<g onmousemove=\""tip(event,'<b>""+esc(d.mes)+""</b><br>Leads: ""+fN(v1)+""<br>Aptos: ""+fN(v2)+""')\"" onmouseleave='tipOff()'>"";
+			      svg += ""<rect x='""+x1+""' y='""+y1+""' width='""+bw+""' height='""+h1+""' fill='#1A1A1A' rx='3'/>"";
+			      svg += ""<rect x='""+x2+""' y='""+y2+""' width='""+bw+""' height='""+h2+""' fill='#B8935A' rx='3' opacity='.9'/>"";
+			      svg += ""<text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-6)+""' text-anchor='middle'>""+esc(ms)+""</text>"";
+			      svg += ""</g>"";
+			    });
+			    el.innerHTML=svg;
+			  }
+			  window.rEv = function(){
+			    var btn=document.getElementById('mA-b'); if(!btn) return; var k=btn.dataset.v;
+			    var el=document.getElementById('svgEv'); if(!el) return;
+			    var d=svgDim(el,500,150); var W=d[0],H=d[1]; el.setAttribute('viewBox','0 0 '+W+' '+H);
+			    var MY=rJ('jMy')||[]; if(!MY.length){ el.innerHTML=""<text x='""+(W/2)+""' y='""+(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>""; return; }
+			    var P={t:24,r:16,b:28,l:42};
+			    var vals=MY.map(function(d2){ return Number(d2[k])||0; });
+			    var mx=Math.max.apply(null,vals.concat([1]))*1.18, CW=W-P.l-P.r, CH=H-P.t-P.b, gw=CW/(MY.length-1||1);
+			    var pts=MY.map(function(d2,i){ var v=Number(d2[k])||0; var x=P.l+(MY.length>1?i*gw:CW/2); var y=P.t+CH-(v/mx)*CH; return {x:x,y:y,v:v,mes:d2.mes}; });
+			    var lineD=smoothCurve(pts);
+			    var areaD='M'+pts[0].x.toFixed(1)+','+(P.t+CH)+' L'+lineD.slice(1)+' L'+pts[pts.length-1].x.toFixed(1)+','+(P.t+CH)+'Z';
+			    var uid='g'+Math.floor(Math.random()*99999);
+			    var svg=axes(W,H,P,mx);
+			    svg += ""<defs><linearGradient id='lg""+uid+""' x1='0%' y1='0%' x2='100%' y2='0%'><stop offset='0%' stop-color='#1A1A1A' stop-opacity='.8'/><stop offset='100%' stop-color='#B8935A' stop-opacity='1'/></linearGradient><linearGradient id='ag""+uid+""' x1='0%' y1='0%' x2='0%' y2='100%'><stop offset='0%' stop-color='#B8935A' stop-opacity='.15'/><stop offset='100%' stop-color='#B8935A' stop-opacity='0'/></linearGradient></defs>"";
+			    svg += ""<path d='""+areaD+""' fill='url(#ag""+uid+"")'/>"";
+			    svg += ""<path d='""+lineD+""' fill='none' stroke='url(#lg""+uid+"")' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/>"";
+			    var ML2={leads:'Leads',aptos:'Aptos',pre:'Pre (Doc.)',cad:'Cadastro',venda:'Venda'};
+			    pts.forEach(function(p,pi){
+			      var lbl=ML2[k]||k;
+			      var anch=pi===0?'start':pi===pts.length-1?'end':'middle';
+			      svg += ""<circle cx='""+p.x.toFixed(1)+""' cy='""+p.y.toFixed(1)+""' r='10' fill='transparent' onmousemove=\""tip(event,'<b>""+esc(p.mes)+""</b><br>""+lbl+"": ""+fA(p.v)+""')\"" onmouseleave='tipOff()'/>"";
+			      svg += ""<circle cx='""+p.x.toFixed(1)+""' cy='""+p.y.toFixed(1)+""' r='3.5' fill='#B8935A' stroke='#fff' stroke-width='1.5' pointer-events='none'/>"";
+			      if(pts.length <= 10) svg += ""<text class='axv' x='""+p.x.toFixed(1)+""' y='""+(p.y-9).toFixed(1)+""' text-anchor='""+anch+""' font-size='11' pointer-events='none'>""+fA(p.v)+""</text>"";
+			      svg += ""<text class='axl' x='""+p.x.toFixed(1)+""' y='""+(H-8)+""' text-anchor='""+anch+""' pointer-events='none'>""+esc(p.mes)+""</text>"";
+			    });
+			    el.innerHTML=svg;
+			  };
+			  window.rAg = function(){
+			    var btn=document.getElementById('mB-b'); if(!btn) return; var k=btn.dataset.v;
+			    var el=document.getElementById('svgAg'); if(!el) return;
+			    var d=svgDim(el,250,180); var W=d[0],H=d[1]; el.setAttribute('viewBox','0 0 '+W+' '+H);
+			    var AY=rJ('jAy')||[]; if(!AY.length){ el.innerHTML=""<text x='""+(W/2)+""' y='""+(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>""; return; }
+			    var sd=AY.slice().sort(function(a,b){ return (Number(b[k])||0)-(Number(a[k])||0); });
+			    sd=sd.filter(function(d2){ return (Number(d2[k])||0)>0; });
+			    if(!sd.length){ el.innerHTML=""<text x='""+(Math.round(W/2))+""' y='""+(Math.round(H/2))+""' text-anchor='middle' fill='#999'>Sem dados</text>""; return; }
+			    var vals=sd.map(function(d2){ return Number(d2[k])||0; }), mx=Math.max.apply(null,vals.concat([1]))*1.18;
+			    var sum=0; vals.forEach(function(v){ sum+=v; }); var mn=sum/(vals.length||1);
+			    var P={t:22,r:14,b:30,l:40}, CW=W-P.l-P.r, CH=H-P.t-P.b, gw=CW/sd.length, bw=Math.max(8,gw*0.7);
+			    var ML={leads:'Leads',aptos:'Aptos',pre:'Pre (Doc.)',cad:'Cadastro',venda:'Venda'};
+			    var svg=axes(W,H,P,mx), mY=P.t+CH-(mn/mx)*CH;
+			    svg += ""<line class='ml' x1='""+P.l+""' x2='""+(W-P.r)+""' y1='""+mY+""' y2='""+mY+""'/>"";
+			    svg += ""<text class='mlt' x='""+(W-P.r)+""' y='""+(mY-4)+""' text-anchor='end'>MED ""+fN(Math.round(mn))+""</text>"";
+			    sd.forEach(function(d2,i){
+			      var v=Number(d2[k])||0, h=(v/mx)*CH;
+			      var x=P.l+i*gw+(gw-bw)/2, y=P.t+CH-h;
+			      var ps=String(d2.agente||'').split(' '); var l1=esc(ps[0]||''), l2=esc(ps[1]||'');
+			      svg += ""<g onmousemove=\""tip(event,'<b>""+esc(d2.agente||'')+""</b><br>""+ML[k]+"": ""+fA(v)+""')\"" onmouseleave='tipOff()'>"";
+			      svg += ""<rect x='""+x+""' y='""+y+""' width='""+bw+""' height='""+h+""' fill='#1A1A1A' rx='3'/>"";
+			      svg += ""<text class='axv' x='""+(x+bw/2)+""' y='""+(y-4)+""' text-anchor='middle' font-size='11'>""+fA(v)+""</text>"";
+			      svg += ""<text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-18)+""' text-anchor='middle'>""+l1+""</text>"";
+			      svg += ""<text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-6)+""' text-anchor='middle'>""+l2+""</text>"";
+			      svg += ""</g>"";
+			    });
+			    el.innerHTML=svg;
+			  };
+			  function renderStatus(){
+			    var el=document.getElementById('svgSt'); if(!el) return;
+			    var d=svgDim(el,180,180); var W=d[0],H=d[1]; el.setAttribute('viewBox','0 0 '+W+' '+H);
+			    var ST=rJ('jSt')||[]; if(!ST.length){ el.innerHTML=""<text x='""+(W/2)+""' y='""+(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>""; return; }
+			    var STC={'Resolvido':'#4E7D62','Adiado':'#C07C3A','Em Aberto':'#E8C040','Pendente':'#A04848'};
+			    var tot=ST.reduce(function(s,d2){ return s+(Number(d2.qtd)||0); },0);
+			    var cx=W*0.38, cy=H/2, r=Math.min(cx,cy)*0.8, ri=r*0.55;
+			    var start=-Math.PI/2, svg='';
+			    ST.forEach(function(d2){
+			      var ang=(Number(d2.qtd)||0)/Math.max(tot,1)*Math.PI*2;
+			      var x1=cx+r*Math.cos(start), y1=cy+r*Math.sin(start);
+			      var x2=cx+r*Math.cos(start+ang), y2=cy+r*Math.sin(start+ang);
+			      var i1=cx+ri*Math.cos(start), j1=cy+ri*Math.sin(start);
+			      var i2=cx+ri*Math.cos(start+ang), j2=cy+ri*Math.sin(start+ang);
+			      var lg=ang>Math.PI?1:0, c=STC[d2.status]||'#999';
+			      svg += ""<path d='M""+x1+"" ""+y1+"" A""+r+"" ""+r+"" 0 ""+lg+"" 1 ""+x2+"" ""+y2+"" L""+i2+"" ""+j2+"" A""+ri+"" ""+ri+"" 0 ""+lg+"" 0 ""+i1+"" ""+j1+""Z' fill='""+c+""' opacity='.92' onmousemove=\""tip(event,'<b>""+esc(d2.status)+""</b><br>""+fN(Number(d2.qtd)||0)+""')\"" onmouseleave='tipOff()' style='cursor:default'/>"";
+			      start+=ang;
+			    });
+			    svg += ""<text x='""+cx+""' y='""+(cy-7)+""' text-anchor='middle' fill='#1A1A1A' font-size='16' font-weight='700' font-family='Segoe UI,sans-serif'>""+fN(tot)+""</text>"";
+			    svg += ""<text x='""+cx+""' y='""+(cy+11)+""' text-anchor='middle' fill='#8B8B8B' font-size='9' font-weight='600' font-family='Segoe UI,sans-serif'>CONVERSAS</text>"";
+			    var lx=W*0.72, ly=H*0.14, step=(H*0.72)/ST.length;
+			    ST.forEach(function(d2,i){
+			      var c=STC[d2.status]||'#999', y=ly+i*step+step/2;
+			      svg += ""<rect x='""+lx+""' y='""+(y-7)+""' width='9' height='9' rx='3' fill='""+c+""'/>"";
+			      svg += ""<text x='""+(lx+13)+""' y='""+y+""' fill='#5A5A5A' font-size='10' font-family='Segoe UI,sans-serif'>""+esc(d2.status)+""</text>"";
+			      svg += ""<text x='""+(W-6)+""' y='""+y+""' text-anchor='end' fill='#1A1A1A' font-size='11' font-weight='700' font-family='Segoe UI,sans-serif'>""+fN(Number(d2.qtd)||0)+""</text>"";
+			    });
+			    el.innerHTML=svg;
+			  }
+			  function renderEtiquetas(){
+			    var el=document.getElementById('tagList'); if(!el) return;
+			    var ET=rJ('jEt')||[]; if(!ET.length){ el.innerHTML=""<div style='padding:10px;color:#8B8B8B'>Sem dados</div>""; return; }
+			    var mx=Math.max.apply(null,ET.map(function(d){ return Number(d.qtd)||0; }).concat([1]));
+			    el.innerHTML=ET.map(function(d){
+			      var v=Number(d.qtd)||0, w=(v/mx)*100;
+			      return ""<div><div class='tag-head'><div class='tag-name'>""+esc(d.label)+""</div><div class='tag-count'>""+fN(v)+""</div></div><div class='tag-track'><div class='tag-fill' data-w='""+w+""'></div></div></div>"";
+			    }).join('');
+			    setTimeout(function(){ el.querySelectorAll('.tag-fill').forEach(function(f){ f.style.width=f.dataset.w+'%'; }); }, 80);
+			  }
+			  function renderAll(){
+			    if(!document.getElementById('svgFunil')) return false;
+			    try { buildKPIs(); renderFunil(); rEv(); rAg(); renderStatus(); renderEtiquetas(); return true; }
+			    catch(e){ console.error(e); return false; }
+			  }
+			  var _prevHash='';
+			  function dataHash(){
+			    return ['jKpi','jFu','jMy','jAy','jSt','jEt'].map(function(id){
+			      var e=document.getElementById(id); if(!e) return '';
+			      return e.textContent.length+'|'+e.textContent.slice(0,20);
+			    }).join('~');
+			  }
+			  setInterval(function(){ var h=dataHash(); if(h!==_prevHash){ _prevHash=h; renderAll(); } }, 350);
+			  var rt;
+			  window.addEventListener('resize', function(){ clearTimeout(rt); rt=setTimeout(renderAll,120); });
+			  function tryRender(a){ a=a||0; if(renderAll()) return; if(a<25) setTimeout(function(){ tryRender(a+1); }, 100); }
+			  if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded', function(){ tryRender(); }); } else { tryRender(); }
+			  window.addEventListener('load', function(){ tryRender(); });
+			})();" & "</script>"
+		displayFolder: HTML Yuzap
+		lineageTag: 08cd9c96-e2d3-4d93-aaba-74f5422aeeab
+
+	partition 'Medidas Funil YUZAP' = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,57 @@
+table Seletor_Metrica_Principal
+	lineageTag: 3277888b-e2a2-4494-8996-0a01befcc2df
+
+	measure 'Valor Métrica Principal' =
+			
+			SWITCH(
+			    SELECTEDVALUE(Seletor_Metrica_Principal[Metrica]),
+			    "Mailing", [Mailing],
+			    "Discado", [Discado],
+			    "Alô", [Alô],
+			    "CPC", [CPC],
+			    "Target", [Target],
+			    "Recusa", [Recusa],
+			    "Venda Tabulação", [Venda Tabulação],
+			    BLANK()
+			)
+		formatString: 0
+		lineageTag: 04ec2216-b806-4905-95a7-71a272df0fc1
+
+	column Metrica
+		lineageTag: 60370bb9-4ee5-433d-8cdc-83c93a2ee56b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Metrica]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		formatString: 0
+		lineageTag: 103c889e-eaa8-49df-8513-e9d0c926a448
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Seletor_Metrica_Principal = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Metrica", STRING,
+				    "Ordem", INTEGER,
+				    {
+				        {"Mailing", 1},
+				        {"Discado", 2},
+				        {"Alô", 3},
+				        {"CPC", 4},
+				        {"Target", 5},
+				        {"Recusa", 6},
+				        {"Venda Tabulação", 7}
+				    }
+				)
+
+	annotation PBI_Id = aebbeb68adcc49e99f98b8bdf123c1dc
+

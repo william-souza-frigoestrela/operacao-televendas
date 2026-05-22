@@ -1,0 +1,175 @@
+table Dim_Cliente
+	lineageTag: 5ce9d61c-fef6-4321-86b6-be77fdeea814
+
+	column SEQCLIENTE
+		lineageTag: e8620949-8cab-4a53-8c0c-8221f408cbeb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE]
+
+		annotation SummarizationSetBy = Automatic
+
+	column UltimaData
+		formatString: General Date
+		lineageTag: f7b54915-67ca-4c20-bd82-2eeeab4b023c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [UltimaData]
+
+		variation Variation
+			isDefault
+			relationship: bd32e144-7a7b-41b4-88b7-758337e0df4b
+			defaultHierarchy: LocalDateTable_8e3c0c85-fbcb-4ad5-80ce-134acdc8d4d9.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column CLIENTE
+		lineageTag: dbc95966-29eb-4735-9371-938339156925
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CLIENTE]
+
+		annotation SummarizationSetBy = Automatic
+
+	column GRUPOPESSOA
+		lineageTag: f71ae7b9-eb4e-4f17-9bec-95f5873669de
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [GRUPOPESSOA]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ATIVIDADE
+		lineageTag: 7ccd0fc4-d998-43fc-a5b8-8d7c75feb2d8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ATIVIDADE]
+
+		annotation SummarizationSetBy = Automatic
+
+	column PORTE
+		lineageTag: 63576fce-b55c-44c8-abe4-7333dc2a2675
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [PORTE]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CIDADE
+		lineageTag: 0e604663-ada1-4ab2-8baa-c459af730af0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CIDADE]
+
+		annotation SummarizationSetBy = Automatic
+
+	column UF
+		lineageTag: 199c6db4-227e-4500-b479-41705feee1d4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [UF]
+
+		annotation SummarizationSetBy = Automatic
+
+	column PAIS
+		lineageTag: d54c747f-8597-47b4-86c6-bcb1a9cfb9d3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [PAIS]
+
+		annotation SummarizationSetBy = Automatic
+
+	column SEQCIDADE
+		lineageTag: 66f266d6-666e-4153-beac-1627d8577e95
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [SEQCIDADE]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Dim_Cliente = calculated
+		mode: import
+		source =
+				
+				VAR UltimaData =
+				    SUMMARIZECOLUMNS(
+				        DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE],
+				        "UltimaData", MAX(DCVVQ_VENDAGERALTELEVENDAS[DATA])
+				    )
+				
+				VAR ClienteAtual =
+				    ADDCOLUMNS(
+				        UltimaData,
+				        "CLIENTE",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[CLIENTE], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "GRUPOPESSOA",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[GRUPOPESSOA], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "ATIVIDADE",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[ATIVIDADE], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "PORTE",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[PORTE], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "CIDADE",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[CIDADE], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "UF",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[UF], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "PAIS",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[PAIS], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            ),
+				        "SEQCIDADE",
+				            CALCULATE(
+				                FIRSTNONBLANK(DCVVQ_VENDAGERALTELEVENDAS[SEQCIDADE], 1),
+				                FILTER(
+				                    DCVVQ_VENDAGERALTELEVENDAS,
+				                    DCVVQ_VENDAGERALTELEVENDAS[DATA] = [UltimaData]
+				                )
+				            )
+				    )
+				
+				RETURN
+				    ClienteAtual
+
+	annotation PBI_Id = ea1a9ea2aca243d5b217741f6900fb5d
+

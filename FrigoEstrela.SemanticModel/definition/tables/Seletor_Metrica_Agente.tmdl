@@ -1,0 +1,64 @@
+table Seletor_Metrica_Agente
+	lineageTag: 500a6912-4c66-4324-8a34-1d51a35fe08f
+
+	measure 'Valor Métrica Agente' = ```
+			
+			    // Retorna o valor da métrica selecionada no slicer de agente.
+			    // Essa medida será usada no gráfico por agente para alternar entre volumes do discador
+			    // e tempo médio de atendimento em segundos.
+			
+			    SWITCH(
+			        SELECTEDVALUE(Seletor_Metrica_Agente[Metrica]),
+			        "Mailing", [Mailing],
+			        "Discado", [Discado],
+			        "Alô", [Alô],
+			        "CPC", [CPC],
+			        "Target", [Target],
+			        "Recusa", [Recusa],
+			        "Venda Tabulação", [Venda Tabulação],
+			        "Tempo Médio(seg)", [Tempo Médio(seg)],
+			        BLANK()
+			    )
+			```
+		lineageTag: 52fbf561-bbbb-4fed-a6a8-d67c7f2ed8a8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Metrica
+		lineageTag: 0ca4977f-56d9-48de-a724-755e434cf0d5
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Metrica]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		formatString: 0
+		lineageTag: 6f3482f0-35d5-4cc0-b44f-b324067928c5
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Seletor_Metrica_Agente = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Metrica", STRING,
+				    "Ordem", INTEGER,
+				    {
+				        {"Discado", 1},
+				        {"Alô", 2},
+				        {"CPC", 3},
+				        {"Target", 4},
+				        {"Recusa", 5},
+				        {"Venda Tabulação", 6},
+				        {"Tempo Médio(seg)", 7}
+				    }
+				)
+
+	annotation PBI_Id = 4329d76391bc4843a7f699a4d8e06546
+

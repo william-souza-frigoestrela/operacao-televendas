@@ -1,0 +1,73 @@
+relationship 9ad93da9-bf1e-46a0-9174-fd264f7557a8
+	joinOnDateBehavior: datePartOnly
+	fromColumn: F_Discador.data_hora_ultima_tentativa
+	toColumn: LocalDateTable_b7d2e21f-a5b4-4ec3-85ab-98a6c77c3f75.Date
+
+relationship a44ec2e7-76fd-45f0-9d7a-febb6661174f
+	joinOnDateBehavior: datePartOnly
+	fromColumn: F_Discador.Data_Atendimento
+	toColumn: LocalDateTable_bd9e1364-0ba2-4163-b723-0e7ebd3200a8.Date
+
+relationship ff5cd35a-145d-4079-b9f5-37641b7ad076
+	joinOnDateBehavior: datePartOnly
+	fromColumn: F_Discador.data_hora_atendimento
+	toColumn: LocalDateTable_9e4fd370-8a8e-4242-8a4a-ad061792f3ae.Date
+
+relationship ced5da8a-a079-4541-9ba6-ec6b862f09b5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: D_Calendario.Data
+	toColumn: LocalDateTable_5056a06b-5a7e-4bc0-8ba5-9d0e00270da5.Date
+
+relationship 9442c947-761d-9bd0-feea-22a0f5bb5deb
+	fromColumn: F_Discador.Data_Ultima
+	toColumn: D_Calendario.Data
+
+relationship 06b08165-a028-415c-828d-07564746771c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: F_Yuzap_Conversas.'Data Atualizacao'
+	toColumn: LocalDateTable_d8cf0351-9c66-47ce-a6d5-a626b1005e2c.Date
+
+relationship 01121589-08b6-41f4-bd1a-c19fef76f9fd
+	joinOnDateBehavior: datePartOnly
+	fromColumn: F_Yuzap_Conversas.'data.primeira_resposta'
+	toColumn: LocalDateTable_995700c2-c1c1-4d56-9bda-de9c97b6b744.Date
+
+relationship 48a1ed99-40a8-9a58-160f-ae168b991e2c
+	fromColumn: F_Yuzap_Conversas.DataCriada
+	toColumn: D_Calendario.Data
+
+relationship 606356ac-9bba-3af9-522a-5720bc72f2d7
+	fromColumn: F_Discador.telefone
+	toColumn: D_Telefone.Telefone
+
+relationship 1ca4a175-1b98-c1c9-7e7f-c1bfc3a98cc5
+	fromColumn: F_Yuzap_Conversas.telefone_contato
+	toColumn: D_Telefone.Telefone
+
+relationship 97943bda-5398-49ea-80f3-0913766e32c6
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DCVVQ_VENDAGERALTELEVENDAS.MESANO
+	toColumn: LocalDateTable_52e8965c-cd16-4a0a-9401-9bc4fb7273e6.Date
+
+relationship 8bad2045-649e-4a6b-bdb0-468087e16874
+	joinOnDateBehavior: datePartOnly
+	fromColumn: DCVVQ_VENDAGERALTELEVENDAS.DTAPEDIDO
+	toColumn: LocalDateTable_54117f85-e09e-49a4-bb8e-c1c553ae5ce9.Date
+
+relationship aae393c4-3209-0160-408e-0dddaede0b91
+	fromColumn: DCVVQ_VENDAGERALTELEVENDAS.DATA
+	toColumn: D_Calendario.Data
+
+relationship bd32e144-7a7b-41b4-88b7-758337e0df4b
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Dim_Cliente.UltimaData
+	toColumn: LocalDateTable_8e3c0c85-fbcb-4ad5-80ce-134acdc8d4d9.Date
+
+relationship 074bb582-ac01-fc49-f25b-54e038fd2833
+	fromColumn: DCVVQ_VENDAGERALTELEVENDAS.SEQCLIENTE
+	toColumn: Dim_Cliente.SEQCLIENTE
+
+relationship 76414267-6375-ad5a-2b5a-22ec4c8f9244
+	fromColumn: F_Yuzap_Conversas.'data.attr_cdigo_cliente'
+	toColumn: Dim_Cliente.SEQCLIENTE
+

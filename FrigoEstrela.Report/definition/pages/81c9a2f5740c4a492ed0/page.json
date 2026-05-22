@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "81c9a2f5740c4a492ed0",
+  "displayName": "Discador 2.0",
+  "displayOption": "ActualSize",
+  "height": 990,
+  "width": 1664,
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F0EAE0'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "displayArea": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "filterCard": [
+      {
+        "properties": {
+          "border": {
+            "expr": {
+              "Literal": {
+                "Value": "true"
+              }
+            }
+          }
+        },
+        "selector": {
+          "id": "Available"
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "37e95b7d08a23ab302a3",
+      "type": "DataFilter"
+    },
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "4db810492a81971de24b",
+      "type": "DataFilter"
+    },
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "0b8a85bc7c9b456dbea9",
+      "type": "DataFilter"
+    },
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "e7744606285814abbffc",
+      "type": "DataFilter"
+    },
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "f4810213c8490b5a1628",
+      "type": "DataFilter"
+    },
+    {
+      "source": "08e5173d9a51229040c2",
+      "target": "0c000c8e3b4add792eb5",
+      "type": "DataFilter"
+    }
+  ]
+}

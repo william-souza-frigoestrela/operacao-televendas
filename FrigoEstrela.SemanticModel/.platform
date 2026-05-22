@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "FrigoEstrela"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "5292b2e1-8caa-4544-af5a-4be826f96264"
+  }
+}

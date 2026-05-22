@@ -1,0 +1,57 @@
+table Seletor_Metrica_Comparativa
+	lineageTag: 53fdf58a-5fbc-4941-88a1-9ce82d392e2e
+
+	measure 'Valor Métrica Comparativa' =
+			
+			SWITCH(
+			    SELECTEDVALUE(Seletor_Metrica_Comparativa[Metrica]),
+			    "Mailing", [Mailing],
+			    "Discado", [Discado],
+			    "Alô", [Alô],
+			    "CPC", [CPC],
+			    "Target", [Target],
+			    "Recusa", [Recusa],
+			    "Venda Tabulação", [Venda Tabulação],
+			    BLANK()
+			)
+		formatString: 0
+		lineageTag: e2b80008-b73f-4da3-bebe-a6404322f952
+
+	column Metrica
+		lineageTag: 726978d0-a8f2-48cf-801b-c3008409d239
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Metrica]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		formatString: 0
+		lineageTag: da6a1ecc-0d99-4e58-bd0b-d49ff2c47901
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Seletor_Metrica_Comparativa = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Metrica", STRING,
+				    "Ordem", INTEGER,
+				    {
+				        {"Mailing", 1},
+				        {"Discado", 2},
+				        {"Alô", 3},
+				        {"CPC", 4},
+				        {"Target", 5},
+				        {"Recusa", 6},
+				        {"Venda Tabulação", 7}
+				    }
+				)
+
+	annotation PBI_Id = f71f55f9f96a4145b6540611839d87fb
+

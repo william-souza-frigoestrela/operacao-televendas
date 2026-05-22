@@ -1,0 +1,62 @@
+table 'Funil Acumulado Yuzap'
+	lineageTag: 607b2d4a-5b20-4701-a921-9b6ca64aaa71
+
+	measure 'Pré Acumulado' = ```
+			
+			    [Você disseClientes em Cadastro + Negociação] + [CADASTRO] + [Clientes com Venda]
+			```
+		formatString: 0
+		lineageTag: 6c1ab606-5f98-40de-a24e-91edf7c7b8da
+
+	measure 'Cadastro acumulado' =
+			
+			
+			[CADASTRO] + [Clientes com Venda]
+		formatString: 0
+		lineageTag: 01457e27-07c7-42e8-b261-5f3fc726fb33
+
+	measure '% Conversão Aptos para Pré Acumulado' = ```
+			
+			    DIVIDE(
+			        [Pré Acumulado],
+			        [Clientes Aptos],
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: c362026f-37df-474e-ac21-294fd4e5d66b
+
+	measure '% Conversão Pré Acumulado para Cadastro Acumulado' = ```
+			
+			    DIVIDE(
+			        [Cadastro Acumulado],
+			        [Pré Acumulado],
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 703f5678-8ea6-44c8-af3b-dc506d85b0fd
+
+	measure '% Conversão Cadastro Acumulado para Venda' = ```
+			
+			    DIVIDE(
+			        [Clientes com Venda],
+			        [Cadastro Acumulado],
+			        0
+			    )
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: bd95735a-0448-4a53-8f06-67a90a2da221
+
+	partition 'Funil Acumulado Yuzap' = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_ResultType = Table
+

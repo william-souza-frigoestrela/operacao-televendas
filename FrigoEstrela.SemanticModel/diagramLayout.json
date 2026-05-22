@@ -1,0 +1,270 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 194.24749310195054,
+        "y": 12000.178462742721
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 462.58363345617852,
+            "y": 11728.649013110078
+          },
+          "nodeIndex": "D_Calendario",
+          "nodeLineageTag": "d6a21c89-f4cc-41c2-ad78-28846398781d",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 269.72251001171389,
+            "y": 12316.849676970001
+          },
+          "nodeIndex": "F_Discador",
+          "nodeLineageTag": "a3b16e28-9686-407a-97be-b5a5eac8b67d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 2225.184244156776,
+            "y": 12422.996336576483
+          },
+          "nodeIndex": "Medidas Funil Discador",
+          "nodeLineageTag": "1c89ab36-244e-4178-ba56-c942ae7ff2b5",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 2225.3954646149145,
+            "y": 12565.629574748187
+          },
+          "nodeIndex": "Medidas KPIS Discador",
+          "nodeLineageTag": "b2c08a6e-a3e3-4104-ac40-d8c28d3f8832",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 2220.9122382190258,
+            "y": 12294.3981643955
+          },
+          "nodeIndex": "Medidas Gráficos Discador",
+          "nodeLineageTag": "0f17c257-4eae-4aa7-8078-61b69bd96afc",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 2214.5097977500309,
+            "y": 11797.228208015333
+          },
+          "nodeIndex": "Seletor_Metrica_Principal",
+          "nodeLineageTag": "3277888b-e2a2-4494-8996-0a01befcc2df",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 2216.4200126737906,
+            "y": 12061.647481625632
+          },
+          "nodeIndex": "Seletor_Metrica_Comparativa",
+          "nodeLineageTag": "53fdf58a-5fbc-4941-88a1-9ce82d392e2e",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 5,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1919.1023233718111,
+            "y": 11269.493871349945
+          },
+          "nodeIndex": "Seletor_Metrica_Agente",
+          "nodeLineageTag": "500a6912-4c66-4324-8a34-1d51a35fe08f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 629.0810727817551,
+            "y": 12232.123966758054
+          },
+          "nodeIndex": "F_Yuzap_Conversas",
+          "nodeLineageTag": "0f7ebce6-5570-4fc9-a9bb-37ea85b1ffd8",
+          "size": {
+            "height": 470.06985599999962,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 2224.4291102334369,
+            "y": 12698.46159100484
+          },
+          "nodeIndex": "Medidas YUZAP KPIS",
+          "nodeLineageTag": "eb0da095-383b-4651-89d9-cc9d8199eef3",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 460.67665356025543,
+            "y": 12794.084214565197
+          },
+          "nodeIndex": "D_Telefone",
+          "nodeLineageTag": "f82bdf55-cf73-4862-a1dc-94eb97bdac96",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 2415.8350004539129,
+            "y": 12132.140692972307
+          },
+          "nodeIndex": "Medidas Funil YUZAP",
+          "nodeLineageTag": "026518fa-9e35-462a-b070-b57a292b1876",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 2202.3140924134564,
+            "y": 12830.674350641719
+          },
+          "nodeIndex": "Seletor_Metrica_Yuzap",
+          "nodeLineageTag": "9894ebb1-46c7-4f58-aea2-5ae140f49b7f",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 2219.810755404138,
+            "y": 11317.894663706744
+          },
+          "nodeIndex": "Funil Acumulado Yuzap",
+          "nodeLineageTag": "607b2d4a-5b20-4701-a921-9b6ca64aaa71",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 936.05527656480649,
+            "y": 12234.308005204211
+          },
+          "nodeIndex": "DCVVQ_VENDAGERALTELEVENDAS",
+          "nodeLineageTag": "e6f2216f-09d8-4272-95e3-1cf4e4c90917",
+          "size": {
+            "height": 461.68423131842792,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 933.81530385981375,
+            "y": 12870.55975935533
+          },
+          "nodeIndex": "Dim_Cliente",
+          "nodeLineageTag": "5ce9d61c-fef6-4321-86b6-be77fdeea814",
+          "size": {
+            "height": 410.57264134574325,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2244.4124221610409,
+            "y": 8348.2700396916061
+          },
+          "nodeIndex": "Medidas Visão Executiva",
+          "nodeLineageTag": "13a474d7-56fe-43ba-bf44-819cb0738937",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2682.1790244118865,
+            "y": 6675.9599663027548
+          },
+          "nodeIndex": "Medidas Pág Devoluções",
+          "nodeLineageTag": "4d5b5bc1-61c5-4e12-947e-5b31ab48072a",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2696.4565144001726,
+            "y": 5475.906205966744
+          },
+          "nodeIndex": "Medias Yuzap x ERP",
+          "nodeLineageTag": "97cf80bf-8f00-445c-a2f1-454625460a15",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "Todas as tabelas",
+      "zoomValue": 55.599173134922438,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas as tabelas",
+  "defaultDiagram": "Todas as tabelas"
+}

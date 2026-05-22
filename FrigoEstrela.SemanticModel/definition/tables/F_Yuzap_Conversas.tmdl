@@ -1,0 +1,317 @@
+table F_Yuzap_Conversas
+	lineageTag: 0f7ebce6-5570-4fc9-a9bb-37ea85b1ffd8
+
+	/// Tempo médio (em horas:minutos) entre a abertura da conversa e o status Resolvido. Considera apenas conversas com tempo_resolucao_min preenchido e válido.
+	measure 'Tempo Médio Resolução' =
+			VAR _avg_min =
+			    AVERAGEX(
+			        FILTER(
+			            F_Yuzap_Conversas,
+			            NOT ISBLANK(F_Yuzap_Conversas[tempo_resolucao_min])
+			            && F_Yuzap_Conversas[tempo_resolucao_min] <> ""
+			        ),
+			        IFERROR(VALUE(SUBSTITUTE(F_Yuzap_Conversas[tempo_resolucao_min], ",", ".")), BLANK())
+			    )
+			VAR _h = INT(DIVIDE(_avg_min, 60))
+			VAR _m = INT(MOD(_avg_min, 60))
+			RETURN
+			    IF(
+			        ISBLANK(_avg_min),
+			        "--:--",
+			        FORMAT(_h, "00") & ":" & FORMAT(_m, "00")
+			    )
+		displayFolder: HTML Yuzap
+		lineageTag: 0098fe47-9dcf-42be-bbb8-430b7666120d
+
+	column ID
+		dataType: string
+		lineageTag: a3ef72e0-2064-4780-b47e-1ba23f872e99
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Canal
+		dataType: int64
+		formatString: 0
+		lineageTag: 990322cc-ae47-423a-be3a-5342e0f20921
+		summarizeBy: sum
+		sourceColumn: Canal
+
+		annotation SummarizationSetBy = Automatic
+
+	column Labels
+		dataType: string
+		lineageTag: a78f7bc2-9f5a-4234-9520-dd74f92bb072
+		summarizeBy: none
+		sourceColumn: Labels
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Labels Duplicado'
+		dataType: string
+		lineageTag: f2c61b7e-331d-4eb5-aff7-a597f52cb1bf
+		summarizeBy: none
+		sourceColumn: Labels Duplicado
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		dataType: string
+		lineageTag: a2f4d231-e3b8-4196-a8b0-68aa972329d7
+		summarizeBy: none
+		sourceColumn: Status
+
+		annotation SummarizationSetBy = Automatic
+
+	column DataCriada
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3a685fc1-0570-4b9c-8cdc-057f59fdfede
+		summarizeBy: none
+		sourceColumn: DataCriada
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Hora CriacaoData'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: b4df0ed8-4159-49b6-8569-67b6447f12e8
+		summarizeBy: none
+		sourceColumn: Hora CriacaoData
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Nome Contato'
+		dataType: string
+		lineageTag: 13b50da5-e4a3-49fb-8d64-cd87d312944f
+		summarizeBy: none
+		sourceColumn: Nome Contato
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Descarte'
+		dataType: string
+		lineageTag: 2cd0dd71-d70b-448b-ac4b-6633a4316922
+		summarizeBy: none
+		sourceColumn: Data Descarte
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Data Atualizacao'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: d2807eed-59f7-46cc-84d6-e5bf4ec2a171
+		summarizeBy: none
+		sourceColumn: Data Atualizacao
+
+		variation Variation
+			isDefault
+			relationship: 06b08165-a028-415c-828d-07564746771c
+			defaultHierarchy: LocalDateTable_d8cf0351-9c66-47ce-a6d5-a626b1005e2c.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Hora Atualizacao'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 8473b062-468d-4993-990b-fd70fa83496a
+		summarizeBy: none
+		sourceColumn: Hora Atualizacao
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column duracao_minutos
+		dataType: string
+		lineageTag: c4f46618-44bd-42f1-8b04-52ab497f2b53
+		summarizeBy: none
+		sourceColumn: duracao_minutos
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'data.total_mensagens'
+		dataType: int64
+		formatString: 0
+		lineageTag: e5e8744b-6e95-46bc-ac4d-83de1f69b978
+		summarizeBy: sum
+		sourceColumn: data.total_mensagens
+
+		annotation SummarizationSetBy = Automatic
+
+	column telefone_contato
+		dataType: string
+		lineageTag: ed3a3c16-0984-458f-b32b-a866a7ff7703
+		summarizeBy: none
+		sourceColumn: telefone_contato
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'data.primeira_resposta'
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 8890d644-5cc4-4662-857c-42cee4af5ff5
+		summarizeBy: none
+		sourceColumn: data.primeira_resposta
+
+		variation Variation
+			isDefault
+			relationship: 01121589-08b6-41f4-bd1a-c19fef76f9fd
+			defaultHierarchy: LocalDateTable_995700c2-c1c1-4d56-9bda-de9c97b6b744.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Horas Primeira Resposta'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 9f5589d4-9744-423d-8068-029a76db7a93
+		summarizeBy: none
+		sourceColumn: Horas Primeira Resposta
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Agente Responsavel'
+		dataType: string
+		lineageTag: f89ada8a-b6c7-46ea-960b-4f547aeeaca2
+		summarizeBy: none
+		sourceColumn: Agente Responsavel
+
+		annotation SummarizationSetBy = Automatic
+
+	column tempo_resolucao_min
+		dataType: string
+		lineageTag: c512e8fa-d725-440e-9e88-6e6b257fc186
+		summarizeBy: none
+		sourceColumn: tempo_resolucao_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column id_conversa_chatwoot
+		dataType: int64
+		formatString: 0
+		lineageTag: bc5e4444-b7df-4ea1-9f9b-3383204306f7
+		summarizeBy: sum
+		sourceColumn: id_conversa_chatwoot
+
+		annotation SummarizationSetBy = Automatic
+
+	column tempo_primeira_resposta_min
+		dataType: int64
+		formatString: 0
+		lineageTag: dffad52a-4272-4041-b4ca-6689055adc6a
+		summarizeBy: sum
+		sourceColumn: tempo_primeira_resposta_min
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Hora CriacaoData - Copiar'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 01f35324-a093-4430-9da3-72226640d20e
+		summarizeBy: none
+		sourceColumn: Hora CriacaoData - Copiar
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Horas Primeira Resposta - Copiar'
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 7ed677fe-819d-4655-9db9-dfef7985ba32
+		summarizeBy: none
+		sourceColumn: Horas Primeira Resposta - Copiar
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'data.attr_cdigo_cliente'
+		dataType: string
+		lineageTag: fdde53a0-257f-4658-957d-67e5ecf18434
+		summarizeBy: none
+		sourceColumn: data.attr_cdigo_cliente
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	partition F_Yuzap_Conversas = m
+		mode: import
+		source =
+				let
+				    Fonte = Json.Document(Web.Contents("https://fdzwlqkdmzmcsslxcakp.supabase.co/functions/v1/bi-query?view=conversations&attrs=cdigo_cliente&limit=10000", [Headers=[#"x-api-key"="HCXXoKabTLQQcz3s+T4L5fjm"]])),
+				    #"Convertido para Tabela" = Table.FromRecords({Fonte}),
+				    #"data Expandido" = Table.ExpandListColumn(#"Convertido para Tabela", "data"),
+				    #"data Expandido2" = Table.ExpandRecordColumn(#"data Expandido", "data", {"id", "canal", "labels", "status", "empresa", "criada_em", "tipo_canal", "nome_contato", "resolvida_em", "atualizada_em", "duracao_minutos", "total_mensagens", "telefone_contato", "primeira_resposta", "agente_responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min", "attr_cdigo_cliente"}, {"data.id", "data.canal", "data.labels", "data.status", "data.empresa", "data.criada_em", "data.tipo_canal", "data.nome_contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min", "data.attr_cdigo_cliente"}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"data Expandido2",{{"ok", type logical}, {"view", type text}, {"company", type text}, {"total", Int64.Type}, {"offset", Int64.Type}, {"limit", Int64.Type}, {"returned", Int64.Type}, {"data.id", type text}, {"data.canal", Int64.Type}, {"data.labels", type text}, {"data.status", type text}, {"data.empresa", type text}, {"data.criada_em", type datetime}, {"data.tipo_canal", type text}, {"data.nome_contato", type text}, {"data.resolvida_em", type any}, {"data.atualizada_em", type datetime}, {"data.duracao_minutos", type any}, {"data.total_mensagens", Int64.Type}, {"data.telefone_contato", Int64.Type}, {"data.primeira_resposta", type datetime}, {"data.agente_responsavel", type text}, {"data.tempo_resolucao_min", type any}, {"data.id_conversa_chatwoot", Int64.Type}, {"data.tempo_primeira_resposta_min", Int64.Type}}),
+				    #"Outras Colunas Removidas" = Table.SelectColumns(#"Tipo Alterado",{"data.id", "data.canal", "data.labels", "data.status", "data.empresa", "data.criada_em", "data.tipo_canal", "data.nome_contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min", "data.attr_cdigo_cliente"}),
+				    #"Colunas Reordenadas4" = Table.ReorderColumns(#"Outras Colunas Removidas",{"data.attr_cdigo_cliente", "data.id", "data.canal", "data.labels", "data.status", "data.empresa", "data.criada_em", "data.tipo_canal", "data.nome_contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min"}),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Colunas Reordenadas4",{{"data.id", "ID"}, {"data.canal", "Canal"}, {"data.labels", "Labels"}, {"data.status", "Status"}, {"data.empresa", "Empresa"}, {"data.criada_em", "DataCriada"}}),
+				    #"Outras Colunas Removidas1" = Table.SelectColumns(#"Colunas Renomeadas",{"data.attr_cdigo_cliente", "ID", "Canal", "Labels", "Status", "Empresa", "DataCriada", "data.nome_contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min"}),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Outras Colunas Removidas1",{{"data.nome_contato", "Nome Contato"}}),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Colunas Renomeadas1","",null,Replacer.ReplaceValue,{"Labels"}),
+				    #"Outras Colunas Removidas2" = Table.SelectColumns(#"Valor Substituído",{"data.attr_cdigo_cliente", "ID", "Canal", "Labels", "Status", "DataCriada", "Nome Contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min"}),
+				    #"Colunas Renomeadas2" = Table.RenameColumns(#"Outras Colunas Removidas2",{{"data.resolvida_em", "Data Descarte"}, {"data.atualizada_em", "Data Atualizacao"}, {"data.duracao_minutos", "duracao_minutos"}, {"data.telefone_contato", "telefone_contato"}, {"data.agente_responsavel", "Agente Responsavel"}, {"data.tempo_resolucao_min", "tempo_resolucao_min"}, {"data.id_conversa_chatwoot", "id_conversa_chatwoot"}, {"data.tempo_primeira_resposta_min", "tempo_primeira_resposta_min"}}),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Colunas Renomeadas2",{{"ID", type text}, {"Canal", Int64.Type}, {"Labels", type text}, {"Status", type text}, {"DataCriada", type datetime}, {"Nome Contato", type text}, {"Data Descarte", type any}, {"Data Atualizacao", type datetime}, {"duracao_minutos", type any}, {"data.total_mensagens", Int64.Type}, {"telefone_contato", Int64.Type}, {"data.primeira_resposta", type datetime}, {"Agente Responsavel", type text}, {"tempo_resolucao_min", type text}, {"id_conversa_chatwoot", Int64.Type}, {"tempo_primeira_resposta_min", Int64.Type}}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Tipo Alterado1","open","Em Aberto",Replacer.ReplaceText,{"Status"}),
+				    #"Valor Substituído2" = Table.ReplaceValue(#"Valor Substituído1","snoozed","Adiado",Replacer.ReplaceText,{"Status"}),
+				    #"Valor Substituído3" = Table.ReplaceValue(#"Valor Substituído2","resolved","Resolvido",Replacer.ReplaceText,{"Status"}),
+				    #"Valor Substituído4" = Table.ReplaceValue(#"Valor Substituído3","pending","Pendente",Replacer.ReplaceText,{"Status"}),
+				    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Valor Substituído4",{{"telefone_contato", type text}, {"Data Descarte", type text}}),
+				    #"Coluna Duplicada" = Table.DuplicateColumn(#"Tipo Alterado2", "DataCriada", "DataCriada - Copiar"),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Coluna Duplicada",{"ID", "Canal", "Labels", "Status", "DataCriada", "DataCriada - Copiar", "Nome Contato", "Data Descarte", "Data Atualizacao", "duracao_minutos", "data.total_mensagens", "telefone_contato", "data.primeira_resposta", "Agente Responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min"}),
+				    #"Texto Extraído Antes do Delimitador" = Table.TransformColumns(#"Colunas Reordenadas", {{"DataCriada", each Text.BeforeDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado3" = Table.TransformColumnTypes(#"Texto Extraído Antes do Delimitador",{{"DataCriada", type date}}),
+				    #"Colunas Renomeadas3" = Table.RenameColumns(#"Tipo Alterado3",{{"DataCriada - Copiar", "Hora CriacaoData"}}),
+				    #"Texto Extraído Após o Delimitador" = Table.TransformColumns(#"Colunas Renomeadas3", {{"Hora CriacaoData", each Text.AfterDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado4" = Table.TransformColumnTypes(#"Texto Extraído Após o Delimitador",{{"Hora CriacaoData", type time}}),
+				    #"Coluna Duplicada1" = Table.DuplicateColumn(#"Tipo Alterado4", "Data Atualizacao", "Data Atualizacao - Copiar"),
+				    #"Colunas Reordenadas1" = Table.ReorderColumns(#"Coluna Duplicada1",{"ID", "Canal", "Labels", "Status", "DataCriada", "Hora CriacaoData", "Nome Contato", "Data Descarte", "Data Atualizacao", "Data Atualizacao - Copiar", "duracao_minutos", "data.total_mensagens", "telefone_contato", "data.primeira_resposta", "Agente Responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min"}),
+				    #"Texto Extraído Antes do Delimitador1" = Table.TransformColumns(#"Colunas Reordenadas1", {{"Data Atualizacao", each Text.BeforeDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado5" = Table.TransformColumnTypes(#"Texto Extraído Antes do Delimitador1",{{"Data Atualizacao", type date}}),
+				    #"Texto Extraído Após o Delimitador1" = Table.TransformColumns(#"Tipo Alterado5", {{"Data Atualizacao - Copiar", each Text.AfterDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado6" = Table.TransformColumnTypes(#"Texto Extraído Após o Delimitador1",{{"Data Atualizacao - Copiar", type time}}),
+				    #"Colunas Renomeadas4" = Table.RenameColumns(#"Tipo Alterado6",{{"Data Atualizacao - Copiar", "Hora Atualizacao"}}),
+				    #"Coluna Duplicada2" = Table.DuplicateColumn(#"Colunas Renomeadas4", "data.primeira_resposta", "data.primeira_resposta - Copiar"),
+				    #"Colunas Reordenadas2" = Table.ReorderColumns(#"Coluna Duplicada2",{"ID", "Canal", "Labels", "Status", "DataCriada", "Hora CriacaoData", "Nome Contato", "Data Descarte", "Data Atualizacao", "Hora Atualizacao", "duracao_minutos", "data.total_mensagens", "telefone_contato", "data.primeira_resposta", "data.primeira_resposta - Copiar", "Agente Responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min"}),
+				    #"Colunas Renomeadas5" = Table.RenameColumns(#"Colunas Reordenadas2",{{"data.primeira_resposta - Copiar", "Horas Primeira Resposta"}}),
+				    #"Texto Extraído Antes do Delimitador2" = Table.TransformColumns(#"Colunas Renomeadas5", {{"data.primeira_resposta", each Text.BeforeDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado7" = Table.TransformColumnTypes(#"Texto Extraído Antes do Delimitador2",{{"data.primeira_resposta", type date}}),
+				    #"Texto Extraído Após o Delimitador2" = Table.TransformColumns(#"Tipo Alterado7", {{"Horas Primeira Resposta", each Text.AfterDelimiter(Text.From(_, "pt-BR"), " "), type text}}),
+				    #"Tipo Alterado8" = Table.TransformColumnTypes(#"Texto Extraído Após o Delimitador2",{{"Horas Primeira Resposta", type time}}),
+				    #"Coluna Duplicada3" = Table.DuplicateColumn(#"Tipo Alterado8", "Labels", "Labels - Copiar"),
+				    #"Colunas Reordenadas3" = Table.ReorderColumns(#"Coluna Duplicada3",{"ID", "Canal", "Labels", "Labels - Copiar", "Status", "DataCriada", "Hora CriacaoData", "Nome Contato", "Data Descarte", "Data Atualizacao", "Hora Atualizacao", "duracao_minutos", "data.total_mensagens", "telefone_contato", "data.primeira_resposta", "Horas Primeira Resposta", "Agente Responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min"}),
+				    #"Texto Extraído Após o Delimitador3" = Table.TransformColumns(#"Colunas Reordenadas3", {{"Labels - Copiar", each Text.AfterDelimiter(_, ","), type text}}),
+				    #"Colunas Renomeadas6" = Table.RenameColumns(#"Texto Extraído Após o Delimitador3",{{"Labels - Copiar", "Labels Duplicado"}}),
+				    #"Valor Substituído5" = Table.ReplaceValue(#"Colunas Renomeadas6","",null,Replacer.ReplaceValue,{"Labels Duplicado"}),
+				    #"Texto Extraído Antes do Delimitador3" = Table.TransformColumns(#"Valor Substituído5", {{"Labels", each Text.BeforeDelimiter(_, ","), type text}}),
+				    #"Valor Substituído6" = Table.ReplaceValue(#"Texto Extraído Antes do Delimitador3","",null,Replacer.ReplaceValue,{"Labels"}),
+				    #"Texto Extraído Após o Delimitador4" = Table.TransformColumns(#"Valor Substituído6", {{"telefone_contato", each Text.AfterDelimiter(_, "55"), type text}}),
+				    #"Coluna Duplicada4" = Table.DuplicateColumn(#"Texto Extraído Após o Delimitador4", "Hora CriacaoData", "Hora CriacaoData - Copiar"),
+				    #"Texto Extraído Antes do Delimitador4" = Table.TransformColumns(#"Coluna Duplicada4", {{"Hora CriacaoData - Copiar", each Text.BeforeDelimiter(Text.From(_, "pt-BR"), ":"), type text}}),
+				    #"Tipo Alterado9" = Table.TransformColumnTypes(#"Texto Extraído Antes do Delimitador4",{{"Hora CriacaoData - Copiar", type time}}),
+				    #"Coluna Duplicada5" = Table.DuplicateColumn(#"Tipo Alterado9", "Horas Primeira Resposta", "Horas Primeira Resposta - Copiar"),
+				    #"Texto Extraído Antes do Delimitador5" = Table.TransformColumns(#"Coluna Duplicada5", {{"Horas Primeira Resposta - Copiar", each Text.BeforeDelimiter(Text.From(_, "pt-BR"), ":"), type text}}),
+				    #"Tipo Alterado10" = Table.TransformColumnTypes(#"Texto Extraído Antes do Delimitador5",{{"Horas Primeira Resposta - Copiar", type time}, {"data.attr_cdigo_cliente", type text}}),
+				    #"Texto Extraído Antes do Delimitador6" = Table.TransformColumns(#"Tipo Alterado10", {{"data.attr_cdigo_cliente", each Text.BeforeDelimiter(_, " "), type text}}),
+				    #"Linhas Filtradas" = Table.SelectRows(#"Texto Extraído Antes do Delimitador6", each true),
+				    #"Tipo Alterado11" = Table.TransformColumnTypes(#"Linhas Filtradas",{{"data.attr_cdigo_cliente", type number}, {"ID", type text}})
+				in
+				    #"Tipo Alterado11"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,37 @@
+table 'Medidas Pág Devoluções'
+	lineageTag: 4d5b5bc1-61c5-4e12-947e-5b31ab48072a
+
+	measure 'Taxa de Devolução (R$)' = ```
+			
+			DIVIDE(
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[VLRDEVOLUCAO]),
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[VLRVENDA]) + 
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[VLRDEVOLUCAO])
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 97c20cb1-7119-4d58-9d92-67e990d600d2
+
+	measure 'Taxa de Devolução (Peso)' = ```
+			
+			DIVIDE(
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[PESODEVOLVIDO]),
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[PESOVENDA]) + 
+			    SUM(DCVVQ_VENDAGERALTELEVENDAS[PESODEVOLVIDO])
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: e9591ac6-d377-49f0-b624-3a6d84f4e4b0
+
+	partition 'Medidas Pág Devoluções' = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,55 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup Discador
+
+	annotation PBI_QueryGroupOrder = 0
+
+/// Erros nas consultas que foram carregadas em 24/04/2026 11:36:56.
+queryGroup 'Erros na Consulta - 24/04/2026 11:36:56'
+
+	annotation PBI_QueryGroupOrder = 1
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["F_Discador","D_Calendario","Consulta1","Medidas Funil Discador","Medidas KPIS Discador","Medidas Gráficos Discador","F_Yuzap_Conversas","Medidas YUZAP KPIS","Medidas Funil YUZAP","Funil Acumulado Yuzap","DCVVQ_VENDAGERALTELEVENDAS","Medidas Visão Executiva","Medidas Pág Devoluções","Medias Yuzap x ERP"]
+
+annotation PBI_ProTooling = ["MCP-PBIModeling","DevMode"]
+
+ref table F_Discador
+ref table DateTableTemplate_636efb0b-7072-4757-9400-229e6d80cf34
+ref table LocalDateTable_b7d2e21f-a5b4-4ec3-85ab-98a6c77c3f75
+ref table LocalDateTable_bd9e1364-0ba2-4163-b723-0e7ebd3200a8
+ref table LocalDateTable_9e4fd370-8a8e-4242-8a4a-ad061792f3ae
+ref table D_Calendario
+ref table LocalDateTable_5056a06b-5a7e-4bc0-8ba5-9d0e00270da5
+ref table 'Medidas Funil Discador'
+ref table 'Medidas KPIS Discador'
+ref table 'Medidas Gráficos Discador'
+ref table Seletor_Metrica_Principal
+ref table Seletor_Metrica_Comparativa
+ref table Seletor_Metrica_Agente
+ref table F_Yuzap_Conversas
+ref table LocalDateTable_d8cf0351-9c66-47ce-a6d5-a626b1005e2c
+ref table LocalDateTable_995700c2-c1c1-4d56-9bda-de9c97b6b744
+ref table 'Medidas YUZAP KPIS'
+ref table D_Telefone
+ref table 'Medidas Funil YUZAP'
+ref table Seletor_Metrica_Yuzap
+ref table 'Funil Acumulado Yuzap'
+ref table DCVVQ_VENDAGERALTELEVENDAS
+ref table LocalDateTable_52e8965c-cd16-4a0a-9401-9bc4fb7273e6
+ref table LocalDateTable_54117f85-e09e-49a4-bb8e-c1c553ae5ce9
+ref table Dim_Cliente
+ref table LocalDateTable_8e3c0c85-fbcb-4ad5-80ce-134acdc8d4d9
+ref table 'Medidas Visão Executiva'
+ref table 'Medidas Pág Devoluções'
+ref table 'Medias Yuzap x ERP'
+
+ref cultureInfo pt-BR
+

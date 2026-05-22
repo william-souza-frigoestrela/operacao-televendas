@@ -1,0 +1,368 @@
+table 'Medias Yuzap x ERP'
+	lineageTag: 97cf80bf-8f00-445c-a2f1-454625460a15
+
+	measure 'Clientes Yuzap' =
+			
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 3d7315b3-1ca4-4d48-ae61-8b5b47621528
+
+	measure 'Clientes Yuzap com Compra no ERP' = ```
+			
+			VAR ClientesYuzap = 
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    )
+			
+			RETURN
+			    COALESCE(
+			        CALCULATE(
+			            DISTINCTCOUNT(DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE]),
+			            TREATAS(ClientesYuzap, DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			        ),
+			        0
+			    )
+			```
+		formatString: 0
+		lineageTag: 3979a400-a529-453e-ac6b-a733d798ff81
+
+	measure '% Conversão Yuzap → ERP' =
+			
+			COALESCE(
+			    DIVIDE(
+			        [Clientes Yuzap com Compra no ERP],
+			        [Clientes Yuzap]
+			    ),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 90a2f10c-29fd-42b3-9677-1d0c521ae39b
+
+	measure 'Faturamento Total Yuzap' =
+			
+			VAR ClientesYuzap =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    )
+			RETURN
+			    CALCULATE(
+			        SUM(DCVVQ_VENDAGERALTELEVENDAS[VLRVENDA]),
+			        TREATAS(ClientesYuzap, DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			    )
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 6195acaa-7cf3-4af7-bc64-15cd8555c83b
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Peso Total Vendido Yuzap' = ```
+			
+			VAR ClientesYuzap = 
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    )
+			
+			RETURN
+			    COALESCE(
+			        CALCULATE(
+			            SUM(DCVVQ_VENDAGERALTELEVENDAS[PESOVENDA]),
+			            TREATAS(ClientesYuzap, DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			        ),
+			        0
+			    )
+			```
+		lineageTag: e7671fcc-f283-42ea-9d4a-84285f71e237
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Devoluções Yuzap (R$)' = ```
+			
+			VAR ClientesYuzap = 
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    )
+			
+			RETURN
+			    COALESCE(
+			        CALCULATE(
+			            SUM(DCVVQ_VENDAGERALTELEVENDAS[VLRDEVOLUCAO]),
+			            TREATAS(ClientesYuzap, DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			        ),
+			        0
+			    )
+			```
+		formatString: "R$"\ #,0.00;-"R$"\ #,0.00;"R$"\ #,0.00
+		lineageTag: 51e90870-ad3e-40df-944a-dd2f5dec8982
+
+		annotation PBI_FormatHint = {"currencyCulture":"pt-BR"}
+
+	measure 'Peso Total Devolvido Yuzap' = ```
+			
+			VAR ClientesYuzap = 
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        ALL(F_Yuzap_Conversas)
+			    )
+			
+			RETURN
+			    COALESCE(
+			        CALCULATE(
+			            SUM(DCVVQ_VENDAGERALTELEVENDAS[PESODEVOLVIDO]),
+			            TREATAS(ClientesYuzap, DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			        ),
+			        0
+			    )
+			```
+		lineageTag: abcca5a4-64f4-4bb1-af52-52012729843d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Última Compra ERP por Cliente Yuzap' =
+			
+			VAR ClienteAtual =
+			    SELECTEDVALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])
+			RETURN
+			    IF(
+			        ISBLANK(ClienteAtual),
+			        BLANK(),
+			        CALCULATE(
+			            MAX(DCVVQ_VENDAGERALTELEVENDAS[DATA]),
+			            TREATAS(
+			                { ClienteAtual },
+			                DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE]
+			            ),
+			            DCVVQ_VENDAGERALTELEVENDAS[VLRVENDA] > 0
+			        )
+			    )
+		formatString: General Date
+		lineageTag: 8e3b5473-7317-4c79-983e-7765a3493d3e
+
+	measure 'Dias Sem Compra Yuzap' =
+			
+			VAR UltimaCompra =
+			    [Última Compra ERP por Cliente Yuzap]
+			RETURN
+			    IF(
+			        ISBLANK(UltimaCompra),
+			        BLANK(),
+			        DATEDIFF(UltimaCompra, TODAY(), DAY)
+			    )
+		formatString: 0
+		lineageTag: 4752a8f4-2e23-493a-9e14-2be985bb0838
+
+	/// Total de clientes distintos com codigo identificado no Yuzap (data.attr_cdigo_cliente preenchido). E o universo principal da pagina.
+	measure 'Yuzap - Clientes Identificados' =
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: HTML Yuzap
+		lineageTag: ad879d44-297e-4346-8a9d-60c052a7879d
+
+	/// Clientes Yuzap identificados que efetivamente compraram no ERP (existem no DCVVQ).
+	measure 'Yuzap - Clientes Convertidos' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			COALESCE(
+			    CALCULATE(
+			        DISTINCTCOUNT(DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE]),
+			        TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: HTML Yuzap
+		lineageTag: 6a50d509-debf-4fea-a670-d11fde81f36f
+
+	/// Clientes Yuzap identificados que NAO geraram venda no ERP (perdidos no funil).
+	measure 'Yuzap - Clientes Perdidos' = [Yuzap - Clientes Identificados] - [Yuzap - Clientes Convertidos]
+		formatString: 0
+		displayFolder: HTML Yuzap
+		lineageTag: 4930a6a3-e6db-4187-9c1a-15f8271abe2a
+
+	/// Percentual de clientes Yuzap que viraram venda no ERP.
+	measure 'Yuzap - % Conversão' = DIVIDE([Yuzap - Clientes Convertidos], [Yuzap - Clientes Identificados], 0)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: HTML Yuzap
+		lineageTag: 633220f6-3b9a-4733-9a97-9f5a21339212
+
+	/// Faturamento total gerado pelos clientes identificados no Yuzap. Filtra DCVVQ pelos codigos do Yuzap.
+	measure 'Yuzap - Faturamento' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			CALCULATE(
+			    [Faturamento Total],
+			    TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			)
+		formatString: "R$" #,0.00
+		displayFolder: HTML Yuzap
+		lineageTag: b42c85c1-2375-4b66-84f1-7492f40eabb3
+
+	/// Peso total vendido aos clientes identificados no Yuzap.
+	measure 'Yuzap - Peso' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			CALCULATE(
+			    [Peso Total Vendido],
+			    TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			)
+		formatString: #,0.00
+		displayFolder: HTML Yuzap
+		lineageTag: 214f8fc2-cd4a-4f97-8292-698c3e5673a5
+
+	/// Quantidade de pedidos dos clientes Yuzap.
+	measure 'Yuzap - Pedidos' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			CALCULATE(
+			    [Total de Pedidos],
+			    TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			)
+		formatString: 0
+		displayFolder: HTML Yuzap
+		lineageTag: a428889c-fc5a-4a30-aaa1-4e16dff21439
+
+	/// Ticket medio por pedido dos clientes Yuzap.
+	measure 'Yuzap - Ticket Médio' = DIVIDE([Yuzap - Faturamento], [Yuzap - Pedidos], 0)
+		formatString: "R$" #,0.00
+		displayFolder: HTML Yuzap
+		lineageTag: c8b840db-3b7c-42fa-8a9b-405af365197e
+
+	/// Valor R$ de devolucoes dos clientes Yuzap.
+	measure 'Yuzap - Devoluções R$' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			CALCULATE(
+			    [Total Devoluções (R$)],
+			    TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			)
+		formatString: "R$" #,0.00
+		displayFolder: HTML Yuzap
+		lineageTag: 4e2a3b26-e867-4c55-91d1-b947d78ff05f
+
+	/// Peso de devolucoes dos clientes Yuzap.
+	measure 'Yuzap - Devoluções Peso' =
+			VAR _yz =
+			    CALCULATETABLE(
+			        VALUES(F_Yuzap_Conversas[data.attr_cdigo_cliente]),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    )
+			RETURN
+			CALCULATE(
+			    [Peso Total Devolvido],
+			    TREATAS(SELECTCOLUMNS(_yz, "x", VALUE(F_Yuzap_Conversas[data.attr_cdigo_cliente])), DCVVQ_VENDAGERALTELEVENDAS[SEQCLIENTE])
+			)
+		formatString: #,0.00
+		displayFolder: HTML Yuzap
+		lineageTag: b010d38f-dc14-4828-8936-ecf8eade378c
+
+	/// Taxa de devolucao R$ dos clientes Yuzap. Retorna fracao 0-1.
+	measure 'Yuzap - Taxa Devolução %' = DIVIDE([Yuzap - Devoluções R$], [Yuzap - Faturamento] + [Yuzap - Devoluções R$], 0)
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: HTML Yuzap
+		lineageTag: 93a365ad-37c4-4c6c-a8ff-b8856d67fb1a
+
+	/// Total de conversas no Yuzap dos clientes identificados (apenas com codigo preenchido).
+	measure 'Yuzap - Conversas' =
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(F_Yuzap_Conversas),
+			        NOT(ISBLANK(F_Yuzap_Conversas[data.attr_cdigo_cliente])),
+			        F_Yuzap_Conversas[data.attr_cdigo_cliente] <> ""
+			    ),
+			    0
+			)
+		formatString: 0
+		displayFolder: HTML Yuzap
+		lineageTag: d3b0bc0b-0fad-4415-811b-220a0d41dbd9
+
+	/// Variacao percentual MoM do faturamento dos clientes Yuzap.
+	measure 'Yuzap - MoM Faturamento %' =
+			VAR Atual = [Yuzap - Faturamento]
+			VAR Anterior = CALCULATE([Yuzap - Faturamento], DATEADD(D_Calendario[Data], -1, MONTH))
+			VAR Variacao = DIVIDE(Atual - Anterior, Anterior, 0)
+			RETURN FORMAT(Variacao, "+0.0%;-0.0%;0.0%")
+		displayFolder: HTML Yuzap
+		lineageTag: 80853a31-d978-41b0-9fd9-040acbfeae76
+
+	/// Variacao percentual MoM das devolucoes dos clientes Yuzap.
+	measure 'Yuzap - MoM Devoluções %' =
+			VAR Atual = [Yuzap - Devoluções R$]
+			VAR Anterior = CALCULATE([Yuzap - Devoluções R$], DATEADD(D_Calendario[Data], -1, MONTH))
+			VAR Variacao = DIVIDE(Atual - Anterior, Anterior, 0)
+			RETURN FORMAT(Variacao, "+0.0%;-0.0%;0.0%")
+		displayFolder: HTML Yuzap
+		lineageTag: 0c6b2bbe-ffdd-4ec2-9b2b-948913aae69e
+
+	/// Variacao percentual MoM da quantidade de clientes Yuzap identificados.
+	measure 'Yuzap - MoM Clientes %' =
+			VAR Atual = [Yuzap - Clientes Identificados]
+			VAR Anterior = CALCULATE([Yuzap - Clientes Identificados], DATEADD(D_Calendario[Data], -1, MONTH))
+			VAR Variacao = DIVIDE(Atual - Anterior, Anterior, 0)
+			RETURN FORMAT(Variacao, "+0.0%;-0.0%;0.0%")
+		displayFolder: HTML Yuzap
+		lineageTag: ab004e7c-0b36-4c4a-8129-8472147f804e
+
+	/// Variacao percentual MoM da % conversão Yuzap.
+	measure 'Yuzap - MoM Conversão %' =
+			VAR Atual = [Yuzap - % Conversão]
+			VAR Anterior = CALCULATE([Yuzap - % Conversão], DATEADD(D_Calendario[Data], -1, MONTH))
+			VAR Variacao = DIVIDE(Atual - Anterior, Anterior, 0)
+			RETURN FORMAT(Variacao, "+0.0%;-0.0%;0.0%")
+		displayFolder: HTML Yuzap
+		lineageTag: 710df9ed-1453-4042-9bc6-e49e62c54e27
+
+	partition 'Medias Yuzap x ERP' = m
+		mode: import
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

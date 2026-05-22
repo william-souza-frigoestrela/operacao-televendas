@@ -1,0 +1,325 @@
+table F_Discador
+	lineageTag: a3b16e28-9686-407a-97be-b5a5eac8b67d
+
+	column id_call
+		dataType: int64
+		formatString: 0
+		lineageTag: 0c4ea36a-910c-4d58-9b33-91dac1329571
+		summarizeBy: sum
+		sourceColumn: id_call
+
+		annotation SummarizationSetBy = Automatic
+
+	column campanha_id_
+		dataType: int64
+		formatString: 0
+		lineageTag: cd482cb0-82d7-4bb1-a808-cbd718fccd67
+		summarizeBy: sum
+		sourceColumn: campanha_id_
+
+		annotation SummarizationSetBy = Automatic
+
+	column campanha_nome
+		dataType: string
+		lineageTag: 55b38dd7-086b-4a51-800d-981662ab92b1
+		summarizeBy: none
+		sourceColumn: campanha_nome
+
+		annotation SummarizationSetBy = Automatic
+
+	column telefone
+		dataType: string
+		lineageTag: cfb45806-a876-4724-9dc4-03b657946341
+		summarizeBy: none
+		sourceColumn: telefone
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: 2b7214c0-12de-4e13-ad0b-a271f1a760d4
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Ultima
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 62158c79-06dd-42b4-bda4-c5161461189e
+		summarizeBy: none
+		sourceColumn: Data_Ultima
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column data_hora_ultima_tentativa
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cff19831-ba85-4cf1-98f6-3e88fc807598
+		summarizeBy: none
+		sourceColumn: data_hora_ultima_tentativa
+
+		variation Variation
+			isDefault
+			relationship: 9ad93da9-bf1e-46a0-9174-fd264f7557a8
+			defaultHierarchy: LocalDateTable_b7d2e21f-a5b4-4ec3-85ab-98a6c77c3f75.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data_Atendimento
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a3b05450-3449-4435-bf4c-1433d9c93b00
+		summarizeBy: none
+		sourceColumn: Data_Atendimento
+
+		variation Variation
+			isDefault
+			relationship: a44ec2e7-76fd-45f0-9d7a-febb6661174f
+			defaultHierarchy: LocalDateTable_bd9e1364-0ba2-4163-b723-0e7ebd3200a8.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column data_hora_atendimento
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 3d7d3bc9-055f-4098-8d67-4f4f4f1bd8d7
+		summarizeBy: none
+		sourceColumn: data_hora_atendimento
+
+		variation Variation
+			isDefault
+			relationship: ff5cd35a-145d-4079-b9f5-37641b7ad076
+			defaultHierarchy: LocalDateTable_9e4fd370-8a8e-4242-8a4a-ad061792f3ae.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column tentativas
+		dataType: int64
+		formatString: 0
+		lineageTag: 733a8037-e4fa-44b5-8756-4e4a462a6c89
+		summarizeBy: sum
+		sourceColumn: tentativas
+
+		annotation SummarizationSetBy = Automatic
+
+	column duracao
+		dataType: int64
+		formatString: 0
+		lineageTag: f33bb006-70f5-407a-b297-7361a49a5ff1
+		summarizeBy: sum
+		sourceColumn: duracao
+
+		annotation SummarizationSetBy = Automatic
+
+	column uniqueid
+		dataType: string
+		lineageTag: f8a11f41-1832-4453-9482-808f6daa1fca
+		summarizeBy: none
+		sourceColumn: uniqueid
+
+		annotation SummarizationSetBy = Automatic
+
+	column agente_num
+		dataType: string
+		lineageTag: 2c9197f5-4f76-40ba-b417-9b0cb0c9e01e
+		summarizeBy: none
+		sourceColumn: agente_num
+
+		annotation SummarizationSetBy = Automatic
+
+	column agente_name
+		dataType: string
+		lineageTag: 59f31638-b1c1-46bd-99ef-cc9406ce4a1a
+		summarizeBy: none
+		sourceColumn: agente_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_01
+		dataType: string
+		lineageTag: 9bc35001-0097-4847-99f0-470c7d0e1a38
+		summarizeBy: none
+		sourceColumn: mailing_coluna_01
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_02
+		dataType: string
+		lineageTag: b441febd-d9aa-4f49-b3a7-94a885e49357
+		summarizeBy: none
+		sourceColumn: mailing_coluna_02
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_03
+		dataType: string
+		lineageTag: 94544c1b-36ee-48f4-894c-a633aa78a1a6
+		summarizeBy: none
+		sourceColumn: mailing_coluna_03
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_04
+		dataType: string
+		lineageTag: e30df5f1-dc47-48a0-b4b0-17814f994fa0
+		summarizeBy: none
+		sourceColumn: mailing_coluna_04
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_05
+		dataType: string
+		lineageTag: 086c61aa-5db6-4ab4-b2a1-7a7f100ad593
+		summarizeBy: none
+		sourceColumn: mailing_coluna_05
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_06
+		dataType: string
+		lineageTag: 39be37f4-986b-426f-acd6-f27f105649cc
+		summarizeBy: none
+		sourceColumn: mailing_coluna_06
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_07
+		dataType: string
+		lineageTag: 14516281-d84f-444e-94e0-7d38f2598635
+		summarizeBy: none
+		sourceColumn: mailing_coluna_07
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_08
+		dataType: string
+		lineageTag: 29c4806b-f47b-44ec-b741-8771b3d66df3
+		summarizeBy: none
+		sourceColumn: mailing_coluna_08
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_09
+		dataType: string
+		lineageTag: 88da99bc-2960-48de-b206-57b49a936c2b
+		summarizeBy: none
+		sourceColumn: mailing_coluna_09
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_10
+		dataType: string
+		lineageTag: cecc8a9f-54e2-444c-9a95-36ea8e23e5ee
+		summarizeBy: none
+		sourceColumn: mailing_coluna_10
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_11
+		dataType: string
+		lineageTag: 1a386f52-390b-4622-9dc2-3276fa73825f
+		summarizeBy: none
+		sourceColumn: mailing_coluna_11
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_12
+		dataType: string
+		lineageTag: 68c36112-b654-4340-9e71-87279508fac8
+		summarizeBy: none
+		sourceColumn: mailing_coluna_12
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_13
+		dataType: string
+		lineageTag: fdc7b334-c99a-4ac2-8982-dcc0363b853a
+		summarizeBy: none
+		sourceColumn: mailing_coluna_13
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_14
+		dataType: string
+		lineageTag: 171e698f-9eee-4f6e-9d3f-35b39141f127
+		summarizeBy: none
+		sourceColumn: mailing_coluna_14
+
+		annotation SummarizationSetBy = Automatic
+
+	column mailing_coluna_15
+		dataType: string
+		lineageTag: f0736ed4-e5d8-4174-9425-f7d040b02541
+		summarizeBy: none
+		sourceColumn: mailing_coluna_15
+
+		annotation SummarizationSetBy = Automatic
+
+	column tabulacao_01
+		dataType: string
+		lineageTag: 3f1b2281-1813-417a-9c6b-f378ebaad82a
+		summarizeBy: none
+		sourceColumn: tabulacao_01
+
+		annotation SummarizationSetBy = Automatic
+
+	column tabulacao_02
+		dataType: string
+		lineageTag: d19bb8b4-d0d8-4746-8873-a0878b7de5d8
+		summarizeBy: none
+		sourceColumn: tabulacao_02
+
+		annotation SummarizationSetBy = Automatic
+
+	column tabulacao_03
+		dataType: string
+		lineageTag: f6d243d2-3b01-4c93-8b97-e5534c891179
+		summarizeBy: none
+		sourceColumn: tabulacao_03
+
+		annotation SummarizationSetBy = Automatic
+
+	column tabulacao_04
+		dataType: string
+		lineageTag: e38b378b-b18c-41a2-b15a-590462a16e58
+		summarizeBy: none
+		sourceColumn: tabulacao_04
+
+		annotation SummarizationSetBy = Automatic
+
+	partition F_Discador = m
+		mode: import
+		queryGroup: Discador
+		source =
+				let
+				    Fonte = MySQL.Database("facesign.tkonect.com.br:3306", "facesign", [ReturnSingleDatabase=true]),
+				    facesign_vw_crm_facesign = Fonte{[Schema="facesign",Item="vw_crm_facesign"]}[Data],
+				    #"Texto Inserido Antes do Delimitador" = Table.AddColumn(facesign_vw_crm_facesign, "Texto Antes do Delimitador", each Text.BeforeDelimiter(Text.From([data_hora_ultima_tentativa], "pt-BR"), " "), type text),
+				    #"Colunas Renomeadas" = Table.RenameColumns(#"Texto Inserido Antes do Delimitador",{{"Texto Antes do Delimitador", "Data_Ultima"}}),
+				    #"Colunas Reordenadas" = Table.ReorderColumns(#"Colunas Renomeadas",{"id_call", "campanha_id", "campanha_nome", "telefone", "status", "Data_Ultima", "data_hora_ultima_tentativa", "data_hora_atendimento", "tentativas", "duracao", "uniqueid", "agente_num", "agente_name", "mailing_coluna_01", "mailing_coluna_02", "mailing_coluna_03", "mailing_coluna_04", "mailing_coluna_05", "mailing_coluna_06", "mailing_coluna_07", "mailing_coluna_08", "mailing_coluna_09", "mailing_coluna_10", "mailing_coluna_11", "mailing_coluna_12", "mailing_coluna_13", "mailing_coluna_14", "mailing_coluna_15", "tabulacao_01", "tabulacao_02", "tabulacao_03", "tabulacao_04"}),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(#"Colunas Reordenadas",{{"Data_Ultima", type date}}),
+				    #"Texto Inserido Antes do Delimitador1" = Table.AddColumn(#"Tipo Alterado", "Texto Antes do Delimitador", each Text.BeforeDelimiter(Text.From([data_hora_atendimento], "pt-BR"), " "), type text),
+				    #"Colunas Reordenadas1" = Table.ReorderColumns(#"Texto Inserido Antes do Delimitador1",{"id_call", "campanha_id", "campanha_nome", "telefone", "status", "Data_Ultima", "data_hora_ultima_tentativa", "Texto Antes do Delimitador", "data_hora_atendimento", "tentativas", "duracao", "uniqueid", "agente_num", "agente_name", "mailing_coluna_01", "mailing_coluna_02", "mailing_coluna_03", "mailing_coluna_04", "mailing_coluna_05", "mailing_coluna_06", "mailing_coluna_07", "mailing_coluna_08", "mailing_coluna_09", "mailing_coluna_10", "mailing_coluna_11", "mailing_coluna_12", "mailing_coluna_13", "mailing_coluna_14", "mailing_coluna_15", "tabulacao_01", "tabulacao_02", "tabulacao_03", "tabulacao_04"}),
+				    #"Colunas Renomeadas1" = Table.RenameColumns(#"Colunas Reordenadas1",{{"Texto Antes do Delimitador", "Data_Atendimento"}}),
+				    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Colunas Renomeadas1",{{"Data_Atendimento", type date}}),
+				    #"Valor Substituído" = Table.ReplaceValue(#"Tipo Alterado1","Failure","Falha",Replacer.ReplaceText,{"status"}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Valor Substituído","Success","Sucesso",Replacer.ReplaceText,{"status"}),
+				    #"Valor Substituído2" = Table.ReplaceValue(#"Valor Substituído1","NoAnswer","Sem Resposta",Replacer.ReplaceText,{"status"}),
+				    #"Valor Substituído3" = Table.ReplaceValue(#"Valor Substituído2","ShortCall","Ligação Curta",Replacer.ReplaceText,{"status"}),
+				    #"Valor Substituído4" = Table.ReplaceValue(#"Valor Substituído3","Abandoned","Abandono",Replacer.ReplaceText,{"status"}),
+				    #"Texto Extraído Após o Delimitador" = Table.TransformColumns(#"Valor Substituído4", {{"agente_name", each Text.AfterDelimiter(_, "-"), type text}}),
+				    #"Valor Substituído5" = Table.ReplaceValue(#"Texto Extraído Após o Delimitador","",null,Replacer.ReplaceValue,{"agente_name"}),
+				    #"Colunas Renomeadas2" = Table.RenameColumns(#"Valor Substituído5",{{"campanha_id", "campanha_id_"}}),
+				    #"Tipo Alterado2" = Table.TransformColumnTypes(#"Colunas Renomeadas2",{{"id_call", Int64.Type}})
+				in
+				    #"Tipo Alterado2"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

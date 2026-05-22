@@ -1,0 +1,35 @@
+table D_Telefone
+	lineageTag: f82bdf55-cf73-4862-a1dc-94eb97bdac96
+
+	column Telefone
+		lineageTag: 696e6d85-1abf-425e-9268-6553c0439265
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Telefone]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition D_Telefone = calculated
+		mode: import
+		source = ```
+				
+				    // Consolida os telefones únicos das tabelas de Discador e Yuzap.
+				    // Essa dimensão funciona como ponte entre os dois canais,
+				    // evitando relacionamento direto entre tabelas fato.
+				
+				    DISTINCT(
+				        UNION(
+				            SELECTCOLUMNS(
+				                F_Discador,
+				                "Telefone", F_Discador[telefone]
+				            ),
+				            SELECTCOLUMNS(
+				                F_Yuzap_Conversas,
+				                "Telefone", F_Yuzap_Conversas[telefone_contato]
+				            )
+				        )
+				    )
+				```
+
+	annotation PBI_Id = 65cc3406a721487e892b8a1916f30573
+

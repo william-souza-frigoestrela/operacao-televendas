@@ -1,0 +1,518 @@
+table 'Medidas Funil Discador'
+	lineageTag: 1c89ab36-244e-4178-ba56-c942ae7ff2b5
+
+	measure Mailing = DISTINCTCOUNT('F_Discador'[id_call])
+		formatString: 0
+		lineageTag: dbc87ca9-37f1-4201-879c-4e4ea4e9d58b
+
+	measure Alô =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(F_Discador),
+			        F_Discador[status] = "Sucesso"
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 23bfe97e-3d3b-44b1-8534-4bac9daf0e25
+
+	measure Discado =
+			
+			CALCULATE(
+			    COUNT(F_Discador[id_call]),
+			    NOT(ISBLANK(F_Discador[status]))
+			)
+		formatString: 0
+		lineageTag: 55e9281e-5438-4347-8899-865eb8c3d88e
+
+	measure CPC = [Target] + [Recusa] + [Venda Tabulação]
+		formatString: 0
+		lineageTag: de3341e5-b746-4546-bb96-a609382a623a
+
+	measure Target =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(F_Discador),
+			        F_Discador[tabulacao_01] IN {
+			            "Cadastro Novo",
+			            "Cotacao de preços",
+			            "Condicao de pagamento",
+			            "Whatsapp",
+			            "Compra efetuada pela central",
+			            "Reagendamento Agendamento",
+			            "Peso pedido abaixo norma",
+			            "Orcamento enviado",
+			            "Pedido em negociacao",
+			            "Compra efetuada pela central"
+			        }
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 58d2631b-01ed-41b1-81d5-a96e2f192057
+
+	measure Recusa =
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(F_Discador),
+			        F_Discador[tabulacao_01] IN {
+			            "Nao informou motivo da objecao",
+			            "Estabelecimento Fechou"
+			        }
+			    ),
+			    0
+			)
+		formatString: 0
+		lineageTag: 982f4e9e-ffd2-43e6-93e1-9a6b67d43f19
+
+	measure 'Venda Tabulação' = ```
+			
+			COALESCE(
+			    CALCULATE(
+			        COUNTROWS(F_Discador),
+			        F_Discador[tabulacao_01] IN {
+			            "Venda realizada"
+			           
+			        }
+			    ),
+			    0
+			)
+			```
+		formatString: 0
+		lineageTag: 8875fa00-1e50-4f82-8bc6-46e96c7c22ea
+
+	measure '% Mailing' =
+			
+			COALESCE(
+			    DIVIDE([Mailing], [Mailing]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 772d01e8-839f-4cb1-821b-5231e9a85533
+
+	measure '% Discado' =
+			
+			COALESCE(
+			    DIVIDE([Discado], [Mailing]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 81001334-7da1-453d-a552-16a89104df0b
+
+	measure '% Alô' =
+			
+			COALESCE(
+			    DIVIDE([Alô], [Discado]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: d679ac2d-b34a-4609-9683-8a27908b2923
+
+	measure '% CPC' =
+			
+			COALESCE(
+			    DIVIDE([CPC], [Alô]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: b6ba760c-ab28-49fd-b8ff-453dcdc3d65f
+
+	measure '% Target' =
+			
+			COALESCE(
+			    DIVIDE([Target], [CPC]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: db181035-f452-47b5-ae15-bd90b9af8efa
+
+	measure '% Recusa' =
+			
+			COALESCE(
+			    DIVIDE([Recusa], [CPC]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: e6623955-0c39-4e45-ba8e-ab9f94047556
+
+	measure '% Venda (CPC)' =
+			
+			COALESCE(
+			    DIVIDE([Venda Tabulação], [CPC]),
+			    0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 2d0a936a-dc9b-4c31-a92a-a08b3cc27f0e
+
+	/// Array JSON com até 300 registros do F_Discador para alimentar a tabela interativa do HTML Discador.
+	measure '_JSON Discador' =
+			VAR _rows =
+			ADDCOLUMNS(
+			TOPN(300, F_Discador, F_Discador[Data_Ultima], DESC),
+			"_ym", FORMAT(F_Discador[Data_Ultima], "MM/YYYY"),
+			"_dFmt", FORMAT(F_Discador[Data_Ultima], "DD/MM/YYYY")
+			)
+			RETURN
+			"[" &
+			CONCATENATEX(
+			_rows,
+			"{""id"":" & F_Discador[id_call] &
+			",""data"":""" & [_ym] & """" &
+			",""dataD"":""" & [_dFmt] & """" &
+			",""agente"":""" & SUBSTITUTE(SUBSTITUTE(COALESCE(F_Discador[agente_name],""),"""",""),"'","&#39;") & """" &
+			",""campanha"":""" & SUBSTITUTE(SUBSTITUTE(COALESCE(F_Discador[campanha_nome],""),"""",""),"'","&#39;") & """" &
+			",""status"":""" & SUBSTITUTE(COALESCE(F_Discador[status],""),"""","") & """" &
+			",""tab"":""" & SUBSTITUTE(SUBSTITUTE(COALESCE(F_Discador[tabulacao_01],""),"""",""),"'","&#39;") & """" &
+			",""dur"":" & COALESCE(F_Discador[duracao],0) &
+			",""tent"":" & COALESCE(F_Discador[tentativas],0) &
+			"}",
+			",",
+			F_Discador[Data_Ultima], DESC
+			) & "]"
+		displayFolder: HTML Discador
+		lineageTag: f13f3b73-5c8c-4481-be8d-693321e9685e
+
+	/// Top 5 campanhas por volume de chamadas — usado no ticker scrolling do HTML Discador.
+	measure '_JSON Ticker Discador' =
+			VAR _grp =
+			    GROUPBY(
+			        F_Discador,
+			        F_Discador[campanha_nome],
+			        "cnt", COUNTX(CURRENTGROUP(), F_Discador[id_call])
+			    )
+			VAR _itens =
+			    CONCATENATEX(
+			        TOPN(5, _grp, [cnt], DESC),
+			        "{""p"":"" " &
+			            SUBSTITUTE(COALESCE(F_Discador[campanha_nome], ""), """", "") &
+			        """,""v"":"" " &
+			            SUBSTITUTE(FORMAT([cnt], "#,##0"), ",", ".") & " chamadas""}" ,
+			        ","
+			    )
+			RETURN "[" & _itens & "]"
+		displayFolder: HTML Discador
+		lineageTag: a9e2a8b6-084b-47a9-8003-5dc467dc35d1
+
+	/// Top 8 tabulações por volume — usado no donut chart do HTML Discador.
+	measure '_JSON Tabulacao Discador' =
+			VAR _grp =
+			    GROUPBY(
+			        FILTER(F_Discador, F_Discador[tabulacao_01] <> BLANK()),
+			        F_Discador[tabulacao_01],
+			        "cnt", COUNTX(CURRENTGROUP(), F_Discador[id_call])
+			    )
+			VAR _itens =
+			    CONCATENATEX(
+			        TOPN(10, _grp, [cnt], DESC),
+			        "{""tab"":"" " &
+			            SUBSTITUTE(SUBSTITUTE(COALESCE(F_Discador[tabulacao_01], ""), """", ""), "'", "&#39;") &
+			        """,""cnt"":" & [cnt] & "}",
+			        ","
+			    )
+			RETURN "[" & _itens & "]"
+		displayFolder: HTML Discador
+		lineageTag: 9c6a7911-a85e-4f13-a096-23c04e41dc61
+
+	/// Array JSON com métricas mensais do Discador (Mailing, Discado, Alô, CPC, Target, Recusa, WhatsApp, Tempo, Tentativas) para o gráfico de evolução do HTML Discador. IGNORA filtros de data — sempre mostra histórico completo. Continua respondendo a Campanha e Agentes.
+	measure '_JSON Mensal Discador' =
+			VAR _meses =
+			    CALCULATETABLE(
+			        FILTER(
+			            SUMMARIZE(F_Discador, D_Calendario[Mês/Ano], D_Calendario[MesAno Ordem]),
+			            NOT ISBLANK(D_Calendario[MesAno Ordem])
+			        ),
+			        ALL(D_Calendario)
+			    )
+			VAR _result =
+			    ADDCOLUMNS(
+			        _meses,
+			        "_mailing",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Mailing], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_discado",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Discado], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_alo",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Alô], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_cpc",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([CPC], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_target",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Target], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_recusa",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Recusa], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_whatsapp",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Leads Migrados para WhatsApp], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_tempo",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Tempo Médio(seg)], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym),
+			        "_tent",
+			            VAR _ym = D_Calendario[Mês/Ano]
+			            RETURN CALCULATE([Média Tentativas até Alô], ALL(D_Calendario), D_Calendario[Mês/Ano] = _ym)
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _result,
+			    "{""mes"":""" & D_Calendario[Mês/Ano] &
+			    """,""ord"":" & D_Calendario[MesAno Ordem] &
+			    ",""mailing"":"  & COALESCE([_mailing],  0) &
+			    ",""discado"":"  & COALESCE([_discado],  0) &
+			    ",""alo"":"      & COALESCE([_alo],      0) &
+			    ",""cpc"":"      & COALESCE([_cpc],      0) &
+			    ",""target"":"   & COALESCE([_target],   0) &
+			    ",""recusa"":"   & COALESCE([_recusa],   0) &
+			    ",""whatsapp"":" & COALESCE([_whatsapp], 0) &
+			    ",""tempo"":"    & COALESCE(ROUND([_tempo], 0), 0) &
+			    ",""tent"":"     & SUBSTITUTE(FORMAT(COALESCE([_tent], 0), "0.00"), ",", ".") &
+			    "}",
+			    ",",
+			    D_Calendario[MesAno Ordem], ASC
+			) & "]"
+		displayFolder: HTML Discador
+		lineageTag: a1533354-60ed-430d-a33c-3b81828ba51a
+
+	/// Array JSON com métricas por agente do Discador (Mailing, Discado, Alô, CPC, Target, Recusa, WhatsApp, Tempo, Tentativas, Tabulações) para o gráfico por agente do HTML Discador.
+	measure '_JSON Agentes Discador' =
+			VAR _agentes =
+			    FILTER(
+			        VALUES(F_Discador[agente_name]),
+			        NOT ISBLANK(F_Discador[agente_name]) && F_Discador[agente_name] <> ""
+			    )
+			VAR _result =
+			    ADDCOLUMNS(
+			        _agentes,
+			        "_mailing",  CALCULATE([Mailing]),
+			        "_discado",  CALCULATE([Discado]),
+			        "_alo",      CALCULATE([Alô]),
+			        "_cpc",      CALCULATE([CPC]),
+			        "_target",   CALCULATE([Target]),
+			        "_recusa",   CALCULATE([Recusa]),
+			        "_whatsapp", CALCULATE([Leads Migrados para WhatsApp]),
+			        "_tempo",    CALCULATE([Tempo Médio(seg)]),
+			        "_tent",     CALCULATE([Média Tentativas até Alô]),
+			        "_tab",      CALCULATE([Tabulacoes])
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _result,
+			    "{""agente"":""" & SUBSTITUTE(SUBSTITUTE(F_Discador[agente_name],"""",""),"'","&#39;") &
+			    """,""mailing"":"  & COALESCE([_mailing],  0) &
+			    ",""discado"":"   & COALESCE([_discado],  0) &
+			    ",""alo"":"       & COALESCE([_alo],      0) &
+			    ",""cpc"":"       & COALESCE([_cpc],      0) &
+			    ",""target"":"    & COALESCE([_target],   0) &
+			    ",""recusa"":"    & COALESCE([_recusa],   0) &
+			    ",""whatsapp"":"  & COALESCE([_whatsapp], 0) &
+			    ",""tempo"":"     & COALESCE(ROUND([_tempo], 0), 0) &
+			    ",""tent"":"      & SUBSTITUTE(FORMAT(COALESCE([_tent], 0), "0.00"), ",", ".") &
+			    ",""tab"":"       & COALESCE([_tab],     0) &
+			    "}",
+			    ",",
+			    [_alo], DESC
+			) & "]"
+		displayFolder: HTML Discador
+		lineageTag: f1f8ecc5-13ab-4099-a54a-514370c852b4
+
+	/// Array JSON com contagem de chamadas (Mailing) por status para o gráfico de Mailing por Status do HTML Discador.
+	measure '_JSON Status Discador' =
+			VAR _grp =
+			    GROUPBY(
+			        FILTER(F_Discador, NOT ISBLANK(F_Discador[status]) && F_Discador[status] <> ""),
+			        F_Discador[status],
+			        "cnt", COUNTX(CURRENTGROUP(), F_Discador[id_call])
+			    )
+			RETURN
+			"[" &
+			CONCATENATEX(
+			    _grp,
+			    "{""status"":""" & SUBSTITUTE(F_Discador[status],"""","") &
+			    """,""cnt"":" & [cnt] & "}",
+			    ",",
+			    [cnt], DESC
+			) & "]"
+		displayFolder: HTML Discador
+		lineageTag: 12113f34-e3ac-473e-a523-8d95e34a69df
+
+	/// Dashboard HTML refinado da página Discador com SVG charts, microinterações e tipografia premium. Reage aos slicers nativos.
+	measure 'HTML Discador' = ```
+			
+			VAR _mailing  = COALESCE([Mailing], 0)
+			VAR _whatsapp = COALESCE([Leads Migrados para WhatsApp], 0)
+			VAR _tent     = COALESCE([Média Tentativas até Alô], 0)
+			VAR _tempoStr = COALESCE([Tempo Médio Atendimento (mm:ss)], "00:00")
+			VAR _discado  = COALESCE([Discado], 0)
+			VAR _alo      = COALESCE([Alô], 0)
+			VAR _cpc      = COALESCE([CPC], 0)
+			VAR _target   = COALESCE([Target], 0)
+			VAR _recusa   = COALESCE([Recusa], 0)
+			VAR _tabulacoes = COALESCE([Tabulacoes], 0)
+			VAR _agentes = CALCULATE(DISTINCTCOUNT(F_Discador[agente_name]), F_Discador[agente_name] <> BLANK(), F_Discador[agente_name] <> "")
+			VAR _campanhas = CALCULATE(DISTINCTCOUNT(F_Discador[campanha_nome]), F_Discador[campanha_nome] <> BLANK())
+			
+			VAR _mailingF  = SUBSTITUTE(FORMAT(_mailing,  "#,##0"), ",", ".")
+			VAR _whatsappF = SUBSTITUTE(FORMAT(_whatsapp, "#,##0"), ",", ".")
+			VAR _tentF     = SUBSTITUTE(FORMAT(_tent, "0.00"), ",", ".")
+			VAR _discadoF  = SUBSTITUTE(FORMAT(_discado, "#,##0"), ",", ".")
+			VAR _aloF      = SUBSTITUTE(FORMAT(_alo,     "#,##0"), ",", ".")
+			VAR _cpcF      = SUBSTITUTE(FORMAT(_cpc,     "#,##0"), ",", ".")
+			VAR _targetF   = SUBSTITUTE(FORMAT(_target,  "#,##0"), ",", ".")
+			VAR _recusaF   = SUBSTITUTE(FORMAT(_recusa,  "#,##0"), ",", ".")
+			VAR _tabF      = SUBSTITUTE(FORMAT(_tabulacoes, "#,##0"), ",", ".")
+			VAR _whatsPct  = SUBSTITUTE(FORMAT(DIVIDE(_whatsapp, _cpc, 0) * 100, "0.0"), ",", ".")
+			
+			VAR _pctDis = SUBSTITUTE(FORMAT(DIVIDE(_discado, _mailing, 0) * 100, "0.0"), ",", ".")
+			VAR _pctAlo = SUBSTITUTE(FORMAT(DIVIDE(_alo,     _discado, 0) * 100, "0.0"), ",", ".")
+			VAR _pctCpc = SUBSTITUTE(FORMAT(DIVIDE(_cpc,     _alo,     0) * 100, "0.0"), ",", ".")
+			VAR _pctTar = SUBSTITUTE(FORMAT(DIVIDE(_target,  _cpc,     0) * 100, "0.0"), ",", ".")
+			VAR _pctRec = SUBSTITUTE(FORMAT(DIVIDE(_recusa,  _cpc,     0) * 100, "0.0"), ",", ".")
+			
+			VAR _bMail = "100"
+			VAR _bDis  = SUBSTITUTE(FORMAT(MAX(DIVIDE(_discado, _mailing, 0) * 100, 1), "0.0"), ",", ".")
+			VAR _bAlo  = SUBSTITUTE(FORMAT(MAX(DIVIDE(_alo,     _mailing, 0) * 100, 1), "0.0"), ",", ".")
+			VAR _bCpc  = SUBSTITUTE(FORMAT(MAX(DIVIDE(_cpc,     _mailing, 0) * 100, 1), "0.0"), ",", ".")
+			VAR _bTar  = SUBSTITUTE(FORMAT(MAX(DIVIDE(_target,  _mailing, 0) * 100, 1), "0.0"), ",", ".")
+			VAR _bRec  = SUBSTITUTE(FORMAT(MAX(DIVIDE(_recusa,  _mailing, 0) * 100, 1), "0.0"), ",", ".")
+			
+			VAR _jFunnel =
+			  "[{""label"":""MAILING"",""val"":" & _mailing & "}" &
+			  ",{""label"":""DISCADO"",""val"":" & _discado & "}" &
+			  ",{""label"":""ALÔ"",""val"":" & _alo & "}" &
+			  ",{""label"":""CPC"",""val"":" & _cpc & "}" &
+			  ",{""label"":""TARGET"",""val"":" & _target & "}" &
+			  ",{""label"":""RECUSA"",""val"":" & _recusa & "}]"
+			
+			VAR _opts =
+			  "<option value='mailing'>Mailing</option><option value='discado'>Discado</option><option value='alo'>Alô</option><option value='cpc'>CPC</option><option value='target'>Target</option><option value='recusa'>Recusa</option><option value='whatsapp'>WhatsApp</option><option value='tempo'>Tempo (seg)</option><option value='tent'>Tentativas</option>"
+			
+			VAR _css =
+			"<style>:root{--bg:#F0EAE0;--surf:#FFFFFF;--surf2:#FAF6EE;--bd:rgba(26,26,26,.06);--bd2:rgba(26,26,26,.12);--t1:#1A1A1A;--t2:#5C5C5C;--t3:#8B8B8B;--gold:#B8935A;--gold2:#D4B687;--goldS:#E8DCC4;--dark:#2A2A2A;--sh1:0 1px 2px rgba(0,0,0,.04);--sh2:0 1px 2px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);--sh3:0 2px 4px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06);--r1:8px;--r2:12px;--ease:cubic-bezier(.4,0,.2,1)}*{box-sizing:border-box;margin:0;padding:0}html,body{background:linear-gradient(135deg,#F0EAE0 0%,#EAE0CE 100%);color:var(--t1);font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;font-size:14px;font-feature-settings:'tnum' 1;-webkit-font-smoothing:antialiased;height:100vh;width:100vw;overflow:hidden}.dash{padding:14px;display:grid;grid-template-rows:auto auto auto 1fr;gap:10px;height:100vh;width:100%}.hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:0 4px;gap:20px}.hdr-l h1{font-size:24px;font-weight:700;color:var(--t1);letter-spacing:-.6px;line-height:1.15}.hdr-l p{font-size:12px;color:var(--t2);margin-top:4px}.hdr-r{display:flex;gap:18px;align-items:center}.hdr-stat{text-align:right;padding-left:18px;border-left:1px solid var(--bd2);min-width:80px}.hdr-stat:first-child{border-left:none;padding-left:0}.hdr-stat-l{font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:3px}.hdr-stat-v{color:var(--t1);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.4px;line-height:1}.tk{background:rgba(255,255,255,.45);border-radius:var(--r1);padding:7px 0;overflow:hidden;border:1px solid var(--bd)}.tk-tr{display:flex;gap:42px;width:max-content;animation:sT 60s linear infinite}.tk-tr:hover{animation-play-state:paused}.tk-i{white-space:nowrap;color:var(--t2);font-size:11px;padding:0 18px;display:flex;align-items:center;gap:8px;font-weight:500}.tk-d{width:5px;height:5px;border-radius:50%;background:var(--gold)}.tk-i strong{color:var(--t1);font-weight:600}.tk-i .v{color:var(--gold);font-weight:700;margin-left:2px}@keyframes sT{from{transform:translateX(0)}to{transform:translateX(-50%)}}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi{background:var(--surf);border-radius:var(--r2);padding:14px 18px;box-shadow:var(--sh2);border:1px solid var(--bd);transition:all .25s var(--ease);position:relative;overflow:hidden}.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh3)}.kpi::before{content:none;position:absolute;top:0;left:0;width:0;height:100%;background:linear-gradient(180deg,var(--gold),var(--gold2));transition:width .25s var(--ease)}.kpi:hover::before{width:3px}.kpi-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.kpi-l{font-size:13px;color:var(--t2);font-weight:500}.kpi-ic{width:32px;height:32px;background:linear-gradient(135deg,var(--goldS),#F2E8D2);border-radius:var(--r1);display:flex;align-items:center;justify-content:center;color:var(--gold);flex-shrink:0}.kpi-v{font-size:30px;font-weight:700;color:var(--t1);letter-spacing:-.8px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:4px}.kpi-s{font-size:12px;color:var(--t3);font-weight:400}.kpi-s .b{color:var(--gold);font-weight:600}.grid{display:grid;grid-template-columns:340px 1fr 340px;grid-template-rows:1fr 1fr;gap:10px;min-height:0;height:100%}.col{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0;height:100%}.card{background:var(--surf);border-radius:var(--r2);padding:14px 18px;box-shadow:var(--sh2);border:1px solid var(--bd);transition:box-shadow .2s;display:flex;flex-direction:column;min-height:0;overflow:hidden}.card:hover{box-shadow:var(--sh3)}.card.full{grid-row:span 2}.card.wide{grid-column:span 2}.card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-shrink:0}.card-t{font-size:16px;font-weight:600;color:var(--t1);letter-spacing:-.2px;line-height:1.2}.card-st{font-size:11px;color:var(--t3);font-weight:400;margin-top:2px}.cv{flex:1;width:100%;display:block;min-height:0}.cv .gl{stroke:rgba(0,0,0,.05);stroke-dasharray:2,3}.cv .axl{fill:var(--t3);font-size:11.5px;font-weight:500}.cv .axv{fill:var(--t1);font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}.cv .ml{stroke:var(--gold);stroke-dasharray:5,3;stroke-width:1.5}.cv .mlt{fill:var(--gold);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}.cv .br{transition:opacity .2s,filter .2s}.cv .bg-r:hover .br{filter:brightness(1.15)}.lg{display:flex;gap:16px;font-size:10.5px;color:var(--t2);margin-bottom:4px;align-items:center;flex-wrap:wrap;flex-shrink:0}.lg-i{display:flex;align-items:center;gap:6px;font-weight:500}.lg-d{width:10px;height:10px;border-radius:3px}.sel-g{display:flex;gap:6px}.sel{background:var(--surf2);color:var(--t1);border:1px solid var(--bd2);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;outline:none;font-family:inherit;transition:all .15s}.sel:hover{border-color:var(--gold);background:#FFF}.sel.dk{background:var(--dark);color:#FFF;border-color:var(--dark)}.sel.gd{background:var(--gold);color:#FFF;border-color:var(--gold)}.hb-l{display:flex;flex-direction:column;gap:9px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--goldS) transparent}.hb-l::-webkit-scrollbar{width:4px}.hb-l::-webkit-scrollbar-track{background:transparent}.hb-l::-webkit-scrollbar-thumb{background:var(--goldS);border-radius:4px}.hb-l::-webkit-scrollbar-thumb:hover{background:var(--gold2)}.hb-h{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:4px}.hb-n{color:var(--t1);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;flex:1;min-width:0}.hb-c{font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;font-size:15px;text-align:right;letter-spacing:-.3px}.hb-tr{background:var(--goldS);border-radius:100px;height:6px;overflow:hidden}.hb-fl{height:100%;background:linear-gradient(90deg,#1A1A1A,#383838);border-radius:100px;width:0;transition:width .8s var(--ease)}.tt{position:fixed;background:var(--dark);color:#FFF;padding:6px 10px;border-radius:6px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:1000;white-space:nowrap;box-shadow:var(--sh3);font-weight:500}.tt.s{opacity:1}.tt b{color:var(--gold2);font-weight:600}.dd{position:relative;display:inline-block}.dd-l{position:absolute;top:calc(100% + 4px);right:0;min-width:160px;background:#2A2A2A;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:9999;display:none;overflow:hidden}.dd-l.on{display:block}.dd-o{padding:8px 12px;color:rgba(255,255,255,.82);font-size:11px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .12s;font-family:inherit}.dd-o:hover{background:rgba(255,255,255,.12)}.dd-o.act{color:#B8935A}</style>"
+			
+			VAR _icPhone = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z'/></svg>"
+			VAR _icMsg = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'/></svg>"
+			VAR _icRetry = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><polyline points='23 4 23 10 17 10'/><polyline points='1 20 1 14 7 14'/><path d='M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15'/></svg>"
+			VAR _icClock = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"
+			
+			VAR _body =
+			"<div class='dash'><div class='hdr'><div class='hdr-l'><h1>Visão Geral do Discador</h1><p>Análise de produtividade do call center e funil de conversão</p></div><div class='hdr-r'><div class='hdr-stat'><div class='hdr-stat-l'>MAILING</div><div class='hdr-stat-v'>" & _tabF & "</div></div><div class='hdr-stat'><div class='hdr-stat-l'>Agentes</div><div class='hdr-stat-v'>" & _agentes & "</div></div><div class='hdr-stat'><div class='hdr-stat-l'>Campanhas</div><div class='hdr-stat-v'>" & _campanhas & "</div></div></div></div><div class='tk'><div class='tk-tr' id='tkT'></div></div><div class='kpis'><div class='kpi'><div class='kpi-h'><div class='kpi-l'>Mailing Total</div><div class='kpi-ic'>" & _icPhone & "</div></div><div class='kpi-v'>" & _mailingF & "</div><div class='kpi-s'>Base total disparada no período</div></div><div class='kpi'><div class='kpi-h'><div class='kpi-l'>Chegaram no WhatsApp</div><div class='kpi-ic'>" & _icMsg & "</div></div><div class='kpi-v'>" & _whatsappF & "</div><div class='kpi-s'><span class='b'>" & _whatsPct & "%</span> de conversão sobre CPC</div></div><div class='kpi'><div class='kpi-h'><div class='kpi-l'>Média Tentativas até Alô</div><div class='kpi-ic'>" & _icRetry & "</div></div><div class='kpi-v'>" & _tentF & "</div><div class='kpi-s'>Esforço por contato efetivo</div></div><div class='kpi'><div class='kpi-h'><div class='kpi-l'>Tempo Médio Atendimento</div><div class='kpi-ic'>" & _icClock & "</div></div><div class='kpi-v'>" & _tempoStr & "</div><div class='kpi-s'>Duração média por chamada</div></div></div><div class='grid'><div class='card full'><div class='card-h'><div><div class='card-t'>Funil de Conversão</div><div class='card-st'>Mailing até a tabulação final</div></div></div><svg class='cv' id='svgF' viewBox='0 0 310 500' preserveAspectRatio='xMidYMin meet'></svg></div><div class='card'><div class='card-h'><div><div class='card-t'>Evolução das Métricas</div><div class='card-st'>Compare duas métricas ao longo do tempo</div></div><div class='sel-g'><div class='dd'><button class='sel dk' id='mP-b' data-v='alo' data-t='mP-l' onclick='tgD(this.dataset.t)'>Alô &#9662;</button><div class='dd-l' id='mP-l' data-p='mP' data-fn='rM' onclick='ddC(event)'><div class='dd-o' data-v='mailing' data-l='Mailing'>Mailing</div><div class='dd-o' data-v='discado' data-l='Discado'>Discado</div><div class='dd-o act' data-v='alo' data-l='Alô'>Alô</div><div class='dd-o' data-v='cpc' data-l='CPC'>CPC</div><div class='dd-o' data-v='target' data-l='Target'>Target</div><div class='dd-o' data-v='recusa' data-l='Recusa'>Recusa</div><div class='dd-o' data-v='whatsapp' data-l='WhatsApp'>WhatsApp</div><div class='dd-o' data-v='tempo' data-l='Tempo (seg)'>Tempo (seg)</div><div class='dd-o' data-v='tent' data-l='Tentativas'>Tentativas</div></div></div><div class='dd'><button class='sel gd' id='mC-b' data-v='cpc' data-t='mC-l' onclick='tgD(this.dataset.t)'>CPC &#9662;</button><div class='dd-l' id='mC-l' data-p='mC' data-fn='rM' onclick='ddC(event)'><div class='dd-o' data-v='mailing' data-l='Mailing'>Mailing</div><div class='dd-o' data-v='discado' data-l='Discado'>Discado</div><div class='dd-o' data-v='alo' data-l='Alô'>Alô</div><div class='dd-o act' data-v='cpc' data-l='CPC'>CPC</div><div class='dd-o' data-v='target' data-l='Target'>Target</div><div class='dd-o' data-v='recusa' data-l='Recusa'>Recusa</div><div class='dd-o' data-v='whatsapp' data-l='WhatsApp'>WhatsApp</div><div class='dd-o' data-v='tempo' data-l='Tempo (seg)'>Tempo (seg)</div><div class='dd-o' data-v='tent' data-l='Tentativas'>Tentativas</div></div></div></div></div><div class='lg'><div class='lg-i'><span class='lg-d' style='background:#1A1A1A'></span>Principal</div><div class='lg-i'><span class='lg-d' style='background:#B8935A'></span>Comparativa</div></div><svg class='cv' id='svgM' viewBox='0 0 600 165' preserveAspectRatio='xMidYMid meet'></svg></div><div class='card'><div class='card-h'><div><div class='card-t'>QTD Tabulação</div><div class='card-st'>Top 10 motivos registrados</div></div></div><div class='hb-l' id='hT'></div></div><div class='card'><div class='card-h'><div><div class='card-t'>Métricas por Agente</div><div class='card-st'>Performance individual + linha de média</div></div><div class='dd'><button class='sel dk' id='mA-b' data-v='alo' data-t='mA-l' onclick='tgD(this.dataset.t)'>Alô &#9662;</button><div class='dd-l' id='mA-l' data-p='mA' data-fn='rA' onclick='ddC(event)'><div class='dd-o' data-v='mailing' data-l='Mailing'>Mailing</div><div class='dd-o' data-v='discado' data-l='Discado'>Discado</div><div class='dd-o act' data-v='alo' data-l='Alô'>Alô</div><div class='dd-o' data-v='cpc' data-l='CPC'>CPC</div><div class='dd-o' data-v='target' data-l='Target'>Target</div><div class='dd-o' data-v='recusa' data-l='Recusa'>Recusa</div><div class='dd-o' data-v='whatsapp' data-l='WhatsApp'>WhatsApp</div><div class='dd-o' data-v='tempo' data-l='Tempo (seg)'>Tempo (seg)</div><div class='dd-o' data-v='tent' data-l='Tentativas'>Tentativas</div></div></div></div><svg class='cv' id='svgA' viewBox='0 0 600 190' preserveAspectRatio='xMidYMid meet'></svg></div><div class='card'><div class='card-h'><div><div class='card-t'>Mailing por Status</div><div class='card-st'>Distribuição de resultados das chamadas</div></div></div><svg class='cv' id='svgS' viewBox='0 0 310 190' preserveAspectRatio='xMidYMid meet'></svg></div></div><div class='tt' id='tt'></div></div>"
+			
+			VAR _jsonScripts =
+			"<script type='application/json' id='jT'>"  & [_JSON Ticker Discador]    & "</script>" &
+			"<script type='application/json' id='jM'>"  & [_JSON Mensal Discador]    & "</script>" &
+			"<script type='application/json' id='jA'>"  & [_JSON Agentes Discador]   & "</script>" &
+			"<script type='application/json' id='jB'>"  & [_JSON Tabulacao Discador] & "</script>" &
+			"<script type='application/json' id='jS'>"  & [_JSON Status Discador]    & "</script>" &
+			"<script type='application/json' id='jF'>"  & _jFunnel                   & "</script>"
+			
+			VAR _js =
+			"<script>
+			(function(){
+			  function readJSON(id){var el=document.getElementById(id);try{return JSON.parse((el&&el.textContent)||'[]');}catch(e){return [];}}
+			  function rebind(){
+			    var T=readJSON('jT'),M=readJSON('jM'),A=readJSON('jA'),B=readJSON('jB'),S=readJSON('jS'),F=readJSON('jF');
+			    var ML={mailing:'Mailing',discado:'Discado',alo:'Alô',cpc:'CPC',target:'Target',recusa:'Recusa',whatsapp:'WhatsApp',tempo:'Tempo (s)',tent:'Tent.'};
+			    var SC={'Sucesso':'#5C8A6B','Falha':'#B85C5C','Sem Resposta':'#C4954E','Ligação Curta':'#5C7A9A','Abandono':'#8B6E9C','Placing':'#8B8B8B'};
+			    function esc(v){return String((v==null?String():v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+			    function fN(v){return (Number(v)||0).toLocaleString('pt-BR');}
+			    function fT(s){var n=Math.max(0,Math.floor(Number(s)||0));return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
+			    function fV(k,v){if(k==='tempo')return fT(v);if(k==='tent')return (Number(v)||0).toFixed(2);return fN(v);}
+			    function fA2(v,k){if(k==='tempo')return fT(v);if(k==='tent')return (Number(v)||0).toFixed(1);if(v>=1000)return (v/1000).toFixed(1).replace('.',',')+' mil';return fN(v);}
+			    var tt=document.getElementById('tt');
+			    window.tip=function(e,html){if(!tt)return;tt.innerHTML=html;tt.classList.add('s');tt.style.left=(e.clientX+12)+'px';tt.style.top=(e.clientY-30)+'px';};
+			    window.tipOff=function(){if(tt)tt.classList.remove('s');};
+			    window.tgD=function(id){var l=document.getElementById(id);if(!l)return;document.querySelectorAll('.dd-l.on').forEach(function(el){if(el!==l)el.classList.remove('on');});l.classList.toggle('on');};
+			    window.ddC=function(e){var o=e.target.closest('.dd-o');if(!o)return;var list=e.currentTarget,p=list.dataset.p,fnName=list.dataset.fn,v=o.dataset.v,l=o.dataset.l;var b=document.getElementById(p+'-b');b.textContent=l+' ▾';b.dataset.v=v;list.querySelectorAll('.dd-o').forEach(function(el){el.classList.toggle('act',el.dataset.v===v);});list.classList.remove('on');if(window[fnName])window[fnName]();};
+			    function gridAxes(W,H,P,mx,fmt){var g=String();for(var i=0;i<=4;i++){var y=P.t+(H-P.t-P.b)*i/4;var v=mx*(1-i/4);g+=""<line class='gl' x1='""+P.l+""' x2='""+(W-P.r)+""' y1='""+y+""' y2='""+y+""'/>"";if(i<4)g+=""<text class='axl' x='""+(P.l-4)+""' y='""+(y+4)+""' text-anchor='end' opacity='.7'>""+fmt(v)+""</text>"";}return g;}
+			    window.rF=function(){
+			      var el=document.getElementById('svgF');if(!el)return;
+			      if(!F||!F.length){el.innerHTML=""<text x='155' y='250' text-anchor='middle' fill='#999' font-size='12' font-family='Inter,system-ui,sans-serif'>Sem dados</text>"";return;}
+			      var W=310,H=500,PL=72,PR=70,mxW=W-PL-PR,cx=PL+mxW/2,sH=66,gap=16,topY=22;
+			      var base=Math.max(Number(F[0].val)||0,1);
+			      var clrs=['#111111','#1C1C1C','#2A2A2A','#3D2E14','#7A5828','#B8935A'];
+			      var st=F.map(function(d,i){
+			        var val=Math.max(Number(d.val)||0,0);
+			        var w=Math.max((val/base)*mxW,2);
+			        var x=cx-w/2;
+			        var y=topY+i*(sH+gap);
+			        var pct=i?((val/Math.max(Number(F[i-1].val)||1,1))*100):null;
+			        return{val:val,w:w,x:x,y:y,pct:pct,label:String(d.label)};
+			      });
+			      var svg=String();
+			      st.forEach(function(s,i){if(!i)return;var p=st[i-1];svg+=""<path d='M""+p.x+"",""+(p.y+sH)+"" L""+(p.x+p.w)+"",""+(p.y+sH)+"" L""+(s.x+s.w)+"",""+s.y+"" L""+s.x+"",""+s.y+""Z' fill='""+clrs[i]+""' opacity='.13'/>"";});
+			      st.forEach(function(s,i){
+			        var c=clrs[Math.min(i,clrs.length-1)];
+			        var isGold=i===clrs.length-1;
+			        svg+=""<rect x='""+s.x+""' y='""+s.y+""' width='""+s.w+""' height='""+sH+""' rx='5' fill='""+c+""'/>"";
+			        svg+=""<rect x='""+s.x+""' y='""+s.y+""' width='""+s.w+""' height='""+(sH*0.38)+""' rx='5' fill='rgba(255,255,255,.07)'/>"";
+			        if(isGold)svg+=""<line x1='""+s.x+""' y1='""+(s.y+sH)+""' x2='""+(s.x+s.w)+""' y2='""+(s.y+sH)+""' stroke='#B8935A' stroke-width='1.5'/>"";
+			        svg+=""<text x='""+(PL-8)+""' y='""+(s.y+sH/2+4)+""' text-anchor='end' fill='#6B6B6B' font-size='12' font-weight='700' letter-spacing='.5' font-family='Inter,system-ui,sans-serif'>""+s.label+""</text>"";
+			        svg+=""<text x='""+(cx+mxW/2+8)+""' y='""+(s.y+sH/2-5)+""' text-anchor='start' fill='#1A1A1A' font-size='16' font-weight='700' font-variant-numeric='tabular-nums' font-family='Inter,system-ui,sans-serif'>""+fN(s.val)+""</text>"";
+			        if(s.pct!==null){var ac=s.pct<30?'#B85C5C':(s.pct<70?'#C4954E':'#5C8A6B');svg+=""<text x='""+(cx+mxW/2+8)+""' y='""+(s.y+sH/2+12)+""' text-anchor='start' fill='""+ac+""' font-size='11.5' font-weight='600' font-family='Inter,system-ui,sans-serif'>""+s.pct.toFixed(1).replace('.',',')+""%</text>"";}
+			        else{svg+=""<text x='""+(cx+mxW/2+8)+""' y='""+(s.y+sH/2+12)+""' text-anchor='start' fill='#B8935A' font-size='11.5' font-weight='600' font-family='Inter,system-ui,sans-serif'>BASE</text>"";}
+			      });
+			      el.innerHTML=svg;
+			    };
+			    window.bT=function(){var t=document.getElementById('tkT');if(!t||!T.length)return;var h=T.map(function(d){return ""<span class='tk-i'><span class='tk-d'></span><strong>""+esc(d.p)+""</strong><span class='v'>""+esc(d.v)+""</span></span>"";}).join(String());t.innerHTML=h+h;};
+			    window.rM=function(){var btnP=document.getElementById('mP-b'),btnC=document.getElementById('mC-b');if(!btnP||!btnC)return;var k1=btnP.dataset.v,k2=btnC.dataset.v;var el=document.getElementById('svgM');if(!el)return;var bb=el.getBoundingClientRect();var W=Math.round(bb.width)||600,H=Math.round(bb.height)||165;if(W<50||H<30){setTimeout(function(){window.rM();},150);return;}el.setAttribute('viewBox','0 0 '+W+' '+H);if(!M.length){el.innerHTML=""<text x='""+Math.round(W/2)+""' y='""+Math.round(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>"";return;}var P={t:26,r:16,b:32,l:50};var all=[];M.forEach(function(d){all.push(Number(d[k1])||0,Number(d[k2])||0);});var mx=Math.max.apply(null,all.concat([1]))*1.18;var CW=W-P.l-P.r,CH=H-P.t-P.b;var gw=CW/M.length,bg=10,bw=(gw-bg*2-3)/2;var svg=gridAxes(W,H,P,mx,function(v){return fA2(v,k1);});M.forEach(function(d,i){var xb=P.l+i*gw+bg;var v1=Number(d[k1])||0,v2=Number(d[k2])||0;var h1=(v1/mx)*CH,h2=(v2/mx)*CH;var x1=xb,y1=P.t+CH-h1,x2=xb+bw+3,y2=P.t+CH-h2;svg+=""<g class='bg-r' onmousemove=\""tip(event,'<b>""+esc(d.mes)+""</b><br>""+ML[k1]+"": ""+fV(k1,v1)+""<br>""+ML[k2]+"": ""+fV(k2,v2)+""')\"" onmouseleave='tipOff()'><rect class='br' x='""+x1+""' y='""+y1+""' width='""+bw+""' height='""+h1+""' fill='#1A1A1A' rx='3'/><rect class='br' x='""+x2+""' y='""+y2+""' width='""+bw+""' height='""+h2+""' fill='#B8935A' rx='3'/><text class='axv' x='""+(x1+bw/2)+""' y='""+(y1-5)+""' text-anchor='middle'>""+fV(k1,v1)+""</text><text class='axv' x='""+(x2+bw/2)+""' y='""+(y2-5)+""' text-anchor='middle' fill='#B8935A'>""+fV(k2,v2)+""</text><text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-10)+""' text-anchor='middle'>""+esc(d.mes)+""</text></g>"";});el.innerHTML=svg;};
+			    window.rA=function(){var btn=document.getElementById('mA-b');if(!btn)return;var k=btn.dataset.v;var el=document.getElementById('svgA');if(!el)return;var bb=el.getBoundingClientRect();var W=Math.round(bb.width)||600,H=Math.round(bb.height)||190;if(W<50||H<30){setTimeout(function(){window.rA();},150);return;}el.setAttribute('viewBox','0 0 '+W+' '+H);if(!A.length){el.innerHTML=""<text x='""+Math.round(W/2)+""' y='""+Math.round(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>"";return;}var sd=A.slice().sort(function(a,b){return (Number(b[k])||0)-(Number(a[k])||0);});var P={t:26,r:16,b:32,l:50};var vals=sd.map(function(d){return Number(d[k])||0;});var mx=Math.max.apply(null,vals.concat([1]))*1.18;var sum=0;vals.forEach(function(v){sum+=v;});var mn=sum/(vals.length||1);var CW=W-P.l-P.r,CH=H-P.t-P.b;var gw=CW/sd.length,bg=Math.min(8,gw*0.15),bw=Math.max(8,gw-bg*2);var svg=gridAxes(W,H,P,mx,function(v){return fA2(v,k);});var mY=P.t+CH-(mn/mx)*CH;svg+=""<line class='ml' x1='""+P.l+""' x2='""+(W-P.r)+""' y1='""+mY+""' y2='""+mY+""'/><text class='mlt' x='""+(W-P.r)+""' y='""+(mY-5)+""' text-anchor='end'>MÉDIA ""+fV(k,mn)+""</text>"";sd.forEach(function(d,i){var v=Number(d[k])||0;var h=(v/mx)*CH;var x=P.l+i*gw+bg,y=P.t+CH-h;var parts=String(d.agente).split(' ');var l1=esc(parts[0]||String());var l2=esc(parts.slice(1).join(' ')||String());svg+=""<g class='bg-r' onmousemove=\""tip(event,'<b>""+esc(d.agente)+""</b><br>""+ML[k]+"": ""+fV(k,v)+""')\"" onmouseleave='tipOff()'><rect class='br' x='""+x+""' y='""+y+""' width='""+bw+""' height='""+h+""' fill='#1A1A1A' rx='3'/><text class='axv' x='""+(x+bw/2)+""' y='""+(y-5)+""' text-anchor='middle'>""+fV(k,v)+""</text><text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-22)+""' text-anchor='middle'>""+l1+""</text><text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-10)+""' text-anchor='middle'>""+l2+""</text></g>"";});el.innerHTML=svg;};
+			    window.bH=function(){var el=document.getElementById('hT');if(!el)return;if(!B.length){el.innerHTML=""<div style='color:#999;text-align:center;padding:20px'>Sem dados</div>"";return;}var sB=B.slice().sort(function(a,b){return (Number(b.cnt)||0)-(Number(a.cnt)||0);});var mx=Math.max.apply(null,sB.map(function(d){return Number(d.cnt)||0;}).concat([1]));el.innerHTML=sB.map(function(d){var v=Number(d.cnt)||0;var w=(v/mx)*100;return ""<div><div class='hb-h'><div class='hb-n' title='""+esc(d.tab)+""'>""+esc(d.tab)+""</div><div class='hb-c'>""+fN(v)+""</div></div><div class='hb-tr'><div class='hb-fl' data-w='""+w+""'></div></div></div>"";}).join(String());setTimeout(function(){document.querySelectorAll('.hb-fl').forEach(function(e){e.style.width=e.dataset.w+'%';});},80);};
+			    window.rS=function(){var el=document.getElementById('svgS');if(!el)return;var bb=el.getBoundingClientRect();var W=Math.round(bb.width)||310,H=Math.round(bb.height)||190;if(W<50||H<30){setTimeout(function(){window.rS();},150);return;}el.setAttribute('viewBox','0 0 '+W+' '+H);if(!S.length){el.innerHTML=""<text x='""+Math.round(W/2)+""' y='""+Math.round(H/2)+""' text-anchor='middle' fill='#999'>Sem dados</text>"";return;}var P={t:26,r:8,b:54,l:50};var vals=S.map(function(d){return Number(d.cnt)||0;});var mx=Math.max.apply(null,vals.concat([1]))*1.18;var CW=W-P.l-P.r,CH=H-P.t-P.b;var gw=CW/S.length,bg=Math.max(4,gw*0.12),bw=gw-bg*2;var svg=gridAxes(W,H,P,mx,function(v){return fA2(v,'mailing');});S.forEach(function(d,i){var v=Number(d.cnt)||0;var h=(v/mx)*CH;var x=P.l+i*gw+bg,y=P.t+CH-h;var c=SC[d.status]||'#1A1A1A';var sp=String(d.status||String()).split(' ');var sl1=esc(sp[0]||String());var sl2=esc(sp.slice(1).join(' ')||String());svg+=""<g class='bg-r' onmousemove=\""tip(event,'<b>""+esc(d.status)+""</b><br>""+fN(v)+"" chamadas')\"" onmouseleave='tipOff()'><rect class='br' x='""+x+""' y='""+y+""' width='""+bw+""' height='""+h+""' fill='""+c+""' rx='3'/><text class='axv' x='""+(x+bw/2)+""' y='""+(y-5)+""' text-anchor='middle' font-size='9'>""+fN(v)+""</text><text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-34)+""' text-anchor='middle' font-size='8.5'>""+sl1+""</text>""+(sl2?""<text class='axl' x='""+(P.l+i*gw+gw/2)+""' y='""+(H-22)+""' text-anchor='middle' font-size='8.5'>""+sl2+""</text>"":String())+""</g>"";});el.innerHTML=svg;};
+			  }
+			  function renderAll(){
+			    if(!document.getElementById('svgF')){return false;}
+			    try{
+			      rebind();
+			      if(window.bT)window.bT();
+			      if(window.rF)window.rF();
+			      if(window.rM)window.rM();
+			      if(window.rA)window.rA();
+			      if(window.bH)window.bH();
+			      if(window.rS)window.rS();
+			      return true;
+			    }catch(e){return false;}
+			  }
+			  function tryRender(attempts){
+			    attempts=attempts||0;
+			    if(renderAll())return;
+			    if(attempts<20)setTimeout(function(){tryRender(attempts+1);},100);
+			  }
+			  tryRender();
+			  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){tryRender();});}
+			  window.addEventListener('load',function(){tryRender();});
+			  setInterval(function(){
+			    var el=document.getElementById('svgF');
+			    if(el&&!el.innerHTML.trim()){tryRender();}
+			  },800);
+			  document.addEventListener('click',function(e){if(!e.target.closest('.dd'))document.querySelectorAll('.dd-l.on').forEach(function(el){el.classList.remove('on');});});
+			})();
+			</script>"
+			
+			RETURN _css & _body & _jsonScripts & _js
+			
+			```
+		displayFolder: HTML Discador
+		lineageTag: 11b4d8b3-aaa8-47fc-b68b-1428fa1faef6
+
+	partition 'Medidas Funil Discador' = m
+		mode: import
+		queryGroup: Discador
+		source =
+				let
+				    Fonte = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [#"Coluna 1" = _t]),
+				    #"Tipo Alterado" = Table.TransformColumnTypes(Fonte,{{"Coluna 1", type text}}),
+				    #"Colunas Removidas" = Table.RemoveColumns(#"Tipo Alterado",{"Coluna 1"})
+				in
+				    #"Colunas Removidas"
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
