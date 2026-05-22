@@ -60,3 +60,5 @@ table 'Funil Acumulado Yuzap'
 
 	annotation PBI_ResultType = Table
 
+	annotation PBI_NavigationStepName = Navegação
+

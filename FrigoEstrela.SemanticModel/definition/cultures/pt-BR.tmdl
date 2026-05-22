@@ -3997,16 +3997,6 @@ cultureInfo pt-BR
 			          "metrica": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "Principal": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -4241,16 +4231,6 @@ cultureInfo pt-BR
 			            },
 			            "Weight": 0.458
 			          }
-			        },
-			        {
-			          "Principal": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -4289,16 +4269,6 @@ cultureInfo pt-BR
 			          "metrica": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "Metrica Comparativa": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -4330,16 +4300,6 @@ cultureInfo pt-BR
 			        {
 			          "valor métrica comparativa": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "Comparativa": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -4963,16 +4923,6 @@ cultureInfo pt-BR
 			        {
 			          "nome contato": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "Nome do Lead": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -5775,16 +5725,6 @@ cultureInfo pt-BR
 			            "State": "Generated",
 			            "Weight": 0.99
 			          }
-			        },
-			        {
-			          "Telefone": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -6388,16 +6328,6 @@ cultureInfo pt-BR
 			          "agente responsavel": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "Agente Responsável": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -6564,16 +6494,6 @@ cultureInfo pt-BR
 			        {
 			          "leads únicos yuzap": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "Leads Totais": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -7200,16 +7120,6 @@ cultureInfo pt-BR
 			        {
 			          "clientes inaptos": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "Leads Inaptos": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -8416,16 +8326,6 @@ cultureInfo pt-BR
 			          "grupoproduto": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "Grupo de Produto": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -8649,16 +8549,6 @@ cultureInfo pt-BR
 			        {
 			          "tipodevolucao": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "Tipo de Devolução": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -9567,16 +9457,6 @@ cultureInfo pt-BR
 			            },
 			            "Weight": 0.727
 			          }
-			        },
-			        {
-			          "Faturamento": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -9651,16 +9531,6 @@ cultureInfo pt-BR
 			            "State": "Generated",
 			            "Weight": 0.75
 			          }
-			        },
-			        {
-			          "Devoluções (R$)": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -9732,16 +9602,6 @@ cultureInfo pt-BR
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.591
-			          }
-			        },
-			        {
-			          "Pedidos": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -10207,16 +10067,6 @@ cultureInfo pt-BR
 			          "clientes yuzap": {
 			            "State": "Generated"
 			          }
-			        },
-			        {
-			          "Clientes Yuzap C/Venda": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -10232,16 +10082,6 @@ cultureInfo pt-BR
 			        {
 			          "clientes yuzap com compra no ERP": {
 			            "State": "Generated"
-			          }
-			        },
-			        {
-			          "C/Venda no ERP": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -10279,16 +10119,6 @@ cultureInfo pt-BR
 			            },
 			            "Weight": 0.605
 			          }
-			        },
-			        {
-			          "% Yuzap → ERP": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -10324,16 +10154,6 @@ cultureInfo pt-BR
 			              "Agent": "Thesaurus"
 			            },
 			            "Weight": 0.591
-			          }
-			        },
-			        {
-			          "Faturamento Total": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]
@@ -10371,16 +10191,6 @@ cultureInfo pt-BR
 			            },
 			            "Weight": 0.599
 			          }
-			        },
-			        {
-			          "Peso Total Vendido": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -10402,16 +10212,6 @@ cultureInfo pt-BR
 			          "total devoluções yuzap": {
 			            "State": "Generated",
 			            "Weight": 0.75
-			          }
-			        },
-			        {
-			          "Devoluções Yuzap (R$)": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
 			          }
 			        }
 			      ]

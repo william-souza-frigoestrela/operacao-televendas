@@ -464,3 +464,7 @@ table DCVVQ_VENDAGERALTELEVENDAS
 				in
 				    DCVVQ_VENDAGERALTELEVENDAS1
 
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

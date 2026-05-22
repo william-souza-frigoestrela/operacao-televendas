@@ -297,7 +297,7 @@ table F_Discador
 		queryGroup: Discador
 		source =
 				let
-				    Fonte = MySQL.Database("facesign.tkonect.com.br:3306", "facesign", [ReturnSingleDatabase=true]),
+				    Fonte = MySQL.Database("facesign.tkonect.com.br", "facesign", [ReturnSingleDatabase=true]),
 				    facesign_vw_crm_facesign = Fonte{[Schema="facesign",Item="vw_crm_facesign"]}[Data],
 				    #"Texto Inserido Antes do Delimitador" = Table.AddColumn(facesign_vw_crm_facesign, "Texto Antes do Delimitador", each Text.BeforeDelimiter(Text.From([data_hora_ultima_tentativa], "pt-BR"), " "), type text),
 				    #"Colunas Renomeadas" = Table.RenameColumns(#"Texto Inserido Antes do Delimitador",{{"Texto Antes do Delimitador", "Data_Ultima"}}),
