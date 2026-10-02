@@ -251,7 +251,7 @@ table F_Yuzap_Conversas
 		mode: import
 		source =
 				let
-				    Fonte = Json.Document(Web.Contents("https://fdzwlqkdmzmcsslxcakp.supabase.co/functions/v1/bi-query?view=conversations&attrs=cdigo_cliente&limit=10000", [Headers=[#"x-api-key"="HCXXoKabTLQQcz3s+T4L5fjm"]])),
+				    Fonte = Json.Document(Web.Contents("https://fdzwlqkdmzmcsslxcakp.supabase.co/functions/v1/bi-query?view=conversations&attrs=cdigo_cliente&limit=100", [Headers=[#"x-api-key"="HCXXoKabTLQQcz3s+T4L5fjm"]])),
 				    #"Convertido para Tabela" = Table.FromRecords({Fonte}),
 				    #"data Expandido" = Table.ExpandListColumn(#"Convertido para Tabela", "data"),
 				    #"data Expandido2" = Table.ExpandRecordColumn(#"data Expandido", "data", {"id", "canal", "labels", "status", "empresa", "criada_em", "tipo_canal", "nome_contato", "resolvida_em", "atualizada_em", "duracao_minutos", "total_mensagens", "telefone_contato", "primeira_resposta", "agente_responsavel", "tempo_resolucao_min", "id_conversa_chatwoot", "tempo_primeira_resposta_min", "attr_cdigo_cliente"}, {"data.id", "data.canal", "data.labels", "data.status", "data.empresa", "data.criada_em", "data.tipo_canal", "data.nome_contato", "data.resolvida_em", "data.atualizada_em", "data.duracao_minutos", "data.total_mensagens", "data.telefone_contato", "data.primeira_resposta", "data.agente_responsavel", "data.tempo_resolucao_min", "data.id_conversa_chatwoot", "data.tempo_primeira_resposta_min", "data.attr_cdigo_cliente"}),
